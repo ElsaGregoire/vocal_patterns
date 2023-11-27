@@ -1,11 +1,6 @@
 import os
 import csv
 
-exercises = [
-    "arpeggios",
-    "scales",
-]
-
 # techniques = [
 #     "belt",
 #     "breathy",
@@ -28,6 +23,10 @@ def get_relative_path(relative_path):
 
 
 def generate_csv(root_path, csv_file_path):
+    exercises = [
+        "arpeggios",
+        "scales",
+    ]
     with open(csv_file_path, "w", newline="") as csvfile:
         csv_writer = csv.writer(csvfile)
         csv_writer.writerow(
@@ -53,7 +52,6 @@ if __name__ == "__main__":
     relative_path = "vocal_patterns/data"
     data_file_path = os.path.join(parent_dir, relative_path)
     csv_path = os.path.join(data_file_path, "dataset_tags.csv")
-    print(csv_path)
 
     generate_csv(data_file_path, csv_path)
     print("CSV file has been generated at " + csv_path + ".")
