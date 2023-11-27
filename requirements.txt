@@ -9,6 +9,9 @@ numpy
 pandas
 scikit-learn
 
+# wav analysis
+librosa
+
 # tests/linter
 black
 coverage
