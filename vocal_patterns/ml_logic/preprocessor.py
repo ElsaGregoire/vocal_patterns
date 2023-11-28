@@ -30,7 +30,7 @@ def process_audio(waveform, sr):
         # If the current length is shorter, pad the audio to 6 seconds
         padding_samples = target_length_samples - current_length_samples
         padded_signal = librosa.util.pad_center(
-            waveform, target_length_samples + padding_samples
+            waveform, size=target_length_samples + padding_samples
         )
 
         # Assign the padded signal to the truncated signal
@@ -56,7 +56,7 @@ def mel_spectrogram(wave_trunc, sr):
     return power_to_db
 
 
-def scaling_spectrogram (power_to_db):
+def scaling_spectrogram(power_to_db):
     min_value = np.min(power_to_db)
     max_value = np.max(power_to_db)
 
