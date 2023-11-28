@@ -5,17 +5,14 @@ from sklearn.model_selection import train_test_split
 from vocal_patterns.params import MODEL_TARGET
 
 
-def get_data(test_size: float = 0.2):
+def get_data():
     if MODEL_TARGET == "local":
-        download_path = "../vocal_patterns/data"
-        metadata_file = f"{download_path}/dataset_tags.csv"
-        data = pd.read_csv(metadata_file)
+        download_path = "../vocal_patterns/data/dataset_tags.csv"
+        data = pd.read_csv(download_path)
 
     if MODEL_TARGET == "mlflow":
         pass
-
-    X_train, X_test, y_train, y_test = train_test_split(data, test_size=test_size)
-    return X_train, y_train, X_test, y_test
+    return data
 
 
 def upload_data_to_gcp(

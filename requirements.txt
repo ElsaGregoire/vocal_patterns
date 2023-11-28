@@ -10,11 +10,10 @@ pandas
 scikit-learn
 streamlit
 requests
-librosa
 audio-recorder-streamlit
 matplotlib
 time
-
+tensorflow
 
 # wav analysis
 librosa
@@ -38,4 +37,4 @@ joblib
 memoized-property
 termcolor
 ipython
-librosa
+colorama
