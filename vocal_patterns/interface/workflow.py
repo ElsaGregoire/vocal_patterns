@@ -2,21 +2,22 @@ import datetime
 from prefect import task, flow
 from vocal_patterns.interface.main import evaluate, preprocess, train
 from vocal_patterns.ml_logic.ml_flow import mlflow_transition_model
+from vocal_patterns.params import PREFECT_FLOW_NAME
 
 
 @task
-def preprocess_new_data(min_date: str, max_date: str):
-    return preprocess(min_date=min_date, max_date=max_date)
+def preprocess_new_data(something):
+    return preprocess(something)
 
 
 @task
-def evaluate_production_model(min_date: str, max_date: str):
-    return evaluate(min_date=min_date, max_date=max_date)
+def evaluate_production_model(something):
+    return evaluate(something)
 
 
 @task
-def re_train(min_date: str, max_date: str, split_ratio: str):
-    return train(min_date=min_date, max_date=max_date, split_ratio=split_ratio)
+def re_train(something, something):
+    return train(something)
 
 
 @task
