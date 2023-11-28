@@ -1,3 +1,4 @@
+import pandas as pd
 from vocal_patterns.ml_logic.model import train_model
 from vocal_patterns.ml_logic.preprocessor import (
     load_file,
@@ -6,21 +7,11 @@ from vocal_patterns.ml_logic.preprocessor import (
 )
 
 
-def preprocess(params):
-    """Preprocesses the data"""
-
-    # The processing functions from ml_logic
-    load_file(audio_path)
-    process_audio(y, sr)
-    mel_spectrogram(y_trunc, sr)
-
-    pass
-
-
 # @mlflow_run
-def train(params):
-    # The training function from ml_logic
-    train_model(model, data)
+def train(X: pd.DataFrame, y: pd.DataFrame):
+    X_preprocessed = "#preprocess X"
+
+    train_model(X_preprocessed, y)
     pass
 
 
