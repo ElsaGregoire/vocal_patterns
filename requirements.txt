@@ -8,6 +8,13 @@ wheel>=0.29
 numpy
 pandas
 scikit-learn
+streamlit
+requests
+librosa
+audio-recorder-streamlit
+matplotlib
+time
+
 
 # wav analysis
 librosa

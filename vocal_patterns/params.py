@@ -1,0 +1,9 @@
+import os
+import numpy as np
+
+GCP_PROJECT = os.environ["GCP_PROJECT"]
+GCP_REGION = os.environ["GCP_REGION"]
+MLFLOW_TRACKING_URI = os.environ["MLFLOW_TRACKING_URI"]
+MLFLOW_EXPERIMENT = os.environ["MLFLOW_EXPERIMENT"]
+MLFLOW_MODEL_NAME = os.environ["MLFLOW_MODEL_NAME"]
+PREFECT_FLOW_NAME = os.environ["PREFECT_FLOW_NAME"]
