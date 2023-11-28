@@ -13,7 +13,8 @@ def preprocess(params):
     load_file(audio_path)
     process_audio(y, sr)
     mel_spectrogram(y_trunc, sr)
-
+    y = `something`
+    X_preprocessed = 'something'
     pass
 
 
