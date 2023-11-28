@@ -40,9 +40,26 @@ def process_audio(y, sr):
 
 
 def mel_spectrogram(y_trunc, sr):
+    # Generate a spectrogram
     mel_spectrogram = librosa.feature.melspectrogram(y=y_trunc, sr=sr)
-    db_spectrogram = librosa.display.specshow(
-        librosa.power_to_db(mel_spectrogram, ref=np.max), y_axis="mel", x_axis="time"
-    )
 
-    return db_spectrogram
+    # convert to decibels, logscale
+    # 2D NumPy array containing the intensity values at different frequencies and time points.
+    # power_to_db represents as a grayscale image, not a color image!
+    power_to_db = librosa.power_to_db(mel_spectrogram, ref=np.max)
+
+    # db_spectrogram = librosa.display.specshow(
+    #     librosa.power_to_db(mel_spectrogram, ref=np.max), y_axis="mel", x_axis="time"
+    # )
+
+    return power_to_db
+
+
+def scaling_spectrogram (power_to_db):
+    min_value = np.min(power_to_db)
+    max_value = np.max(power_to_db)
+
+    # NORMALIZING gray array so that all values lie between [0, 1]
+    normalized_spectrogram = (power_to_db - min_value) / (max_value - min_value)
+
+    return normalized_spectrogram
