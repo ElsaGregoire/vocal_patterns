@@ -16,6 +16,9 @@ matplotlib
 time
 
 
+# wav analysis
+librosa
+
 # tests/linter
 black
 coverage
@@ -34,3 +37,5 @@ six>=1.14
 joblib
 memoized-property
 termcolor
+ipython
+librosa

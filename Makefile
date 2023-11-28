@@ -30,6 +30,9 @@ install:
 
 all: clean install test black check_code
 
+create_csv:
+	@python scripts/tag_creator.py
+
 count_lines:
 	@find ./ -name '*.py' -exec  wc -l {} \; | sort -n| awk \
         '{printf "%4s %s\n", $$1, $$2}{s+=$$0}END{print s}'
