@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from vocal_patterns.ml_logic.data import get_data
-from vocal_patterns.ml_logic.model import compile_model, init_model, train_model
+from vocal_patterns.ml_logic.model import compile_model, init_model, fit_model
 from vocal_patterns.ml_logic.preprocessor import (
     preprocess_audio,
 )
@@ -24,7 +24,7 @@ def train(
 
     model = compile_model(model=model, learning_rate=learning_rate)
 
-    history = train_model(
+    model = fit_model(
         model,
         X_train_preprocessed,
         y_train,

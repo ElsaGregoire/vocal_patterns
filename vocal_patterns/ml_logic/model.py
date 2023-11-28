@@ -5,9 +5,7 @@ import numpy as np
 
 
 def init_model(input_shape: tuple) -> Model:
-    # This should also compile the model
-    # return a compiled model
-    pass
+    print("✅ Model initialized")
 
 
 def compile_model(model: Model, learning_rate=0.0005) -> Model:
@@ -24,7 +22,7 @@ def compile_model(model: Model, learning_rate=0.0005) -> Model:
     return model
 
 
-def train_model(
+def fit_model(
     model: Model,
     X: np.ndarray,
     y: np.ndarray,
@@ -37,7 +35,7 @@ def train_model(
         monitor="val_loss", patience=patience, restore_best_weights=True, verbose=1
     )
 
-    history = model.fit(
+    model = model.fit(
         X,
         y,
         # validation_data=validation_data,
@@ -47,7 +45,7 @@ def train_model(
         callbacks=[es],
         verbose=0,
     )
-    return history
+    return model
 
 
 def evaluate_model(model, data):
