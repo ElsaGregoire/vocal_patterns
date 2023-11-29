@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Query, Request
 from numpy import array
 
+from vocal_patterns.interface.main import predict
+
 app = FastAPI()
 
 
@@ -17,12 +19,12 @@ def root():
 
 # Define a new endpoint `/predict` that accepts a sound file and returns the predicted class
 @app.post("/predict")
-async def predict(request: Request):
+async def pred(request: Request):
     data = await request.json()
     float_audio_array_as_list = data["float_audio_array_as_list"]
     float_audio_array = array(float_audio_array_as_list)
-    print(float_audio_array.shape)
-    return {"prediction": "float_audio_array"}
+    prediction = predict(float_audio_array)
+    return {"prediction": int(prediction)}
 
 
 @app.get("/info")

@@ -12,7 +12,6 @@ streamlit
 requests
 audio-recorder-streamlit
 matplotlib
-time
 tensorflow
 
 # wav analysis
