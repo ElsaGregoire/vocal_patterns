@@ -7,13 +7,16 @@ from vocal_patterns.ml_logic.model import (
     compile_model,
     init_model,
     fit_model,
-    evaluate_model,
 )
 from vocal_patterns.ml_logic.preprocessor import (
-    preprocess_audio,
+    preprocess_predict,
+    preprocess_train,
 )
 from vocal_patterns.ml_logic.registry import load_model, save_model, save_results
 from tensorflow.keras.utils import to_categorical
+
+import os
+import sys
 
 
 # @mlflow_run
@@ -31,7 +34,7 @@ def train(
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
-    X_train_preprocessed = preprocess_audio(X_train, augmentations=augmentations)
+    X_train_preprocessed = preprocess_train(X_train, augmentations=augmentations)
 
     X_train_reshaped = X_train_preprocessed.reshape(
         len(X_train_preprocessed),
@@ -40,7 +43,7 @@ def train(
         1,
     )
 
-    X_test_preprocessed = preprocess_audio(X_test)
+    X_test_preprocessed = preprocess_train(X_test)
     X_test_reshaped = X_test_preprocessed.reshape(
         len(X_test_preprocessed),
         X_test_preprocessed.shape[1],
@@ -91,14 +94,14 @@ def train(
     return model
 
 
-def predict(X_pred: pd.DataFrame = None):
+def predict(X_pred: np.ndarray = None):
     if X_pred is None:
         raise ValueError("No data to predict on!")
 
     model = load_model()
     assert model is not None
 
-    X_pred_processed = preprocess_audio(X_pred)
+    X_pred_processed = preprocess_predict(X_pred)
     X_pred_reshaped = X_pred_processed.reshape(
         len(X_pred_processed),
         X_pred_processed.shape[1],
@@ -107,5 +110,10 @@ def predict(X_pred: pd.DataFrame = None):
     )
 
     y_pred = model.predict(X_pred_reshaped)
+    prediction_index = np.argmax(y_pred, axis=1)
 
-    return y_pred
+    return prediction_index[0]
+
+
+if __name__ == "__main__":
+    train()

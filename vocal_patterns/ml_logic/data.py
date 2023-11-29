@@ -1,14 +1,19 @@
-from pathlib import Path
+import os
 import pandas as pd
-from sklearn.model_selection import train_test_split
 
 from vocal_patterns.params import MODEL_TARGET
 
 
 def get_data():
     if MODEL_TARGET == "local":
-        download_path = "../vocal_patterns/data/dataset_tags.csv"
-        data = pd.read_csv(download_path)
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        parent_dir = os.path.dirname(script_dir)
+        relative_path = "data"
+        data_file_path = os.path.join(parent_dir, relative_path)
+        csv_path = os.path.join(data_file_path, "dataset_tags.csv")
+        print(csv_path)
+
+        data = pd.read_csv(csv_path)
 
     if MODEL_TARGET == "mlflow":
         pass
