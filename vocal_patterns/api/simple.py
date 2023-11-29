@@ -3,11 +3,6 @@ from numpy import array
 
 app = FastAPI()
 
-# giving random values to the X so i can check it works
-
-X_predict = "Arpegio"
-X_trained = ["Arpegio", "Scale", "Other"]
-
 
 # Define a root `/` endpoint
 @app.get("/")
