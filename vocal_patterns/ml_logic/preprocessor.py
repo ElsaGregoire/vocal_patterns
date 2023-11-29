@@ -48,7 +48,14 @@ def base_preprocess(
     wave_trunc = process_audio(waveform, sr)
     spectrogram = mel_spectrogram(wave_trunc, sr)
     scaled_spectrogram = scaling_spectrogram(spectrogram)
-    return scaled_spectrogram
+    return np.expand_dims(scaled_spectrogram, axis=-1)
+
+    # X_test_reshaped = X_test_preprocessed.reshape(
+    #     len(X_test_preprocessed),
+    #     X_test_preprocessed.shape[1],
+    #     X_test_preprocessed.shape[2],
+    #     1,
+    # )
 
 
 def preprocess_train(X: pd.DataFrame, augmentations: list | None = None) -> np.ndarray:
