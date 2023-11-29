@@ -38,6 +38,9 @@ def train(
 
     params = dict(
         context="train",
+        learning_rate=learning_rate,
+        data_split=split_ratio,
+        data_process_version="v1",
         loss=loss,
         row_count=len(X_train_preprocessed),
     )
@@ -55,7 +58,7 @@ def predict(X_pred: pd.DataFrame = None):
     model = load_model()
     assert model is not None
 
-    X_pred_processed = preprocess_audio(X_pred)
-    y_pred = model.predict(X_pred_processed)
+    X_pred_processed = preprocess_audio(X_pred).data
+    y_pred = model.predict(X_pred_processed).data
 
     return y_pred

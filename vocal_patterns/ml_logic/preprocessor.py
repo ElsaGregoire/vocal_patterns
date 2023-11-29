@@ -2,9 +2,15 @@ import librosa
 import librosa.display
 import numpy as np
 import pandas as pd
+from typing import TypedDict
 
 
-def preprocess_audio(X: pd.DataFrame) -> np.ndarray:
+class AudioProcessingOutput(TypedDict):
+    data: np.ndarray
+    version: str
+
+
+def preprocess_audio(X: pd.DataFrame) -> AudioProcessingOutput:
     def load_file(audio_path):
         # Load audio file using librosa
         waveform, sr = librosa.load(audio_path, sr=22050)
@@ -76,4 +82,4 @@ def preprocess_audio(X: pd.DataFrame) -> np.ndarray:
     # Stack the spectrograms along a new axis to create a 3D array
     X_processed_array = np.stack(X_processed_list, axis=0)
 
-    return X_processed_array
+    return {"data": X_processed_array, "version": "v1"}
