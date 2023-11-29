@@ -4,12 +4,10 @@ import time
 from io import BytesIO
 import matplotlib.pyplot as plt
 from audio_recorder_streamlit import audio_recorder
-
+import requests
 
 import librosa
 import librosa.display
-
-
 
 st.set_page_config(
     page_title="Vocal Pattern App",
@@ -18,12 +16,21 @@ st.set_page_config(
 
 )
 
+voxlyze_base_uri = 'http://localhost:8000/'
+response = requests.get(voxlyze_base_uri)
+
+resp = response.json()
+
+print(resp)
+
+st.write(resp)
+
 def add_logo():
     st.markdown(
         """
         <style>
             [data-testid="stSidebarNav"] {
-                background-image: url(https://slack-files.com/T02NE0241-F067KRT4SGN-5673fc5b5b);
+                background-image: 'https://slack-files.com/T02NE0241-F067KRT4SGN-5673fc5b5b';
                 background-repeat: no-repeat;
                 padding-top: 120px;
                 background-position: 20px 20px;
