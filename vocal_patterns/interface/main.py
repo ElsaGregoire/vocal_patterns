@@ -3,16 +3,26 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from vocal_patterns.ml_logic.data import get_data
-from vocal_patterns.ml_logic.model import compile_model, init_model, fit_model, evaluate_model
+from vocal_patterns.ml_logic.model import (
+    compile_model,
+    init_model,
+    fit_model,
+    evaluate_model,
+)
 from vocal_patterns.ml_logic.preprocessor import (
     preprocess_audio,
 )
 from vocal_patterns.ml_logic.registry import load_model, save_model, save_results
 from tensorflow.keras.utils import to_categorical
 
+
 # @mlflow_run
 def train(
-    learning_rate=0.001, batch_size=32, patience=2, split_ratio: float = 0.2
+    learning_rate=0.001,
+    batch_size=32,
+    patience=2,
+    split_ratio: float = 0.2,
+    augmentations: list | None = None,
 ) -> float:
     data = get_data()
 
@@ -21,7 +31,7 @@ def train(
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
-    X_train_preprocessed = preprocess_audio(X_train)
+    X_train_preprocessed = preprocess_audio(X_train, augmentations=augmentations)
 
     X_train_reshaped = X_train_preprocessed.reshape(
         len(X_train_preprocessed),
@@ -65,13 +75,16 @@ def train(
     # Evaluate the model on the test data using `evaluate`
     loss, accuracy = model.evaluate(X_test_reshaped, y_test_cat)
 
-    params = dict(
+    results_params = dict(
         context="train",
+        learning_rate=learning_rate,
+        data_split=split_ratio,
+        data_augmentations=augmentations,
         loss=loss,
         row_count=len(X_train_reshaped),
     )
 
-    save_results(params=params, metrics=dict(accuracy=accuracy))
+    save_results(params=results_params, metrics=dict(accuracy=accuracy))
     save_model(model=model)
 
     print(accuracy)

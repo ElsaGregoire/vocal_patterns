@@ -3,14 +3,18 @@ from fastapi import FastAPI, Query
 
 app = FastAPI()
 
-# Define a root `/` endpoint
+# giving random values to the X so i can check it works
 
+X_predict = 'Arpegio'
+X_trained = ['Arpegio', 'Scale', 'Other']
+
+# Define a root `/` endpoint
 @app.get('/')
 def root():
     params = {
     'greeting': '''
     Hello,
-    Welcome to the Vocal Pattern App'''
+    Welcome to Voxalyze'''
 }
     return params.get('greeting')
 

@@ -69,7 +69,6 @@ def fit_model(
         callbacks=[es],
         verbose=0,
     )
-
     return model, history
 
 
