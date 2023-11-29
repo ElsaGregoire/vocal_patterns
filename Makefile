@@ -33,6 +33,13 @@ all: clean install test black check_code
 create_csv:
 	@python scripts/tag_creator.py
 
+start_api:
+	@uvicorn vocal_patterns.api.simple:app --reload
+
+
+start_app:
+	@streamlit run app/app.py
+
 count_lines:
 	@find ./ -name '*.py' -exec  wc -l {} \; | sort -n| awk \
         '{printf "%4s %s\n", $$1, $$2}{s+=$$0}END{print s}'
