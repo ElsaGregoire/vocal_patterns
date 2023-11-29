@@ -6,5 +6,6 @@ raw_data/
 *.csv
 **/__pycache__/
 .env
+.envrc
 
 vocal_patterns/data
