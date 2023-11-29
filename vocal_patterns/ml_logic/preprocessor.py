@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 
-def preprocess_audio(X: pd.DataFrame) -> np.ndarray:
+def preprocess_audio(X: pd.DataFrame, augmentations: list | None = None) -> np.ndarray:
     def load_file(audio_path):
         # Load audio file using librosa
         waveform, sr = librosa.load(audio_path, sr=22050)
@@ -28,7 +28,6 @@ def preprocess_audio(X: pd.DataFrame) -> np.ndarray:
             wave_trunc = waveform[start_sample:target_length_samples]
         else:
             # If the current length is shorter, pad the audio to 6 seconds
-            padding_samples = target_length_samples - current_length_sample
             padded_signal = librosa.util.pad_center(
                 waveform, size=target_length_samples
             )

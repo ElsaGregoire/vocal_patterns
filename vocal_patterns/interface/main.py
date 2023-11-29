@@ -11,20 +11,24 @@ from vocal_patterns.ml_logic.registry import load_model, save_model, save_result
 
 # @mlflow_run
 def train(
-    learning_rate=0.0005, batch_size=256, patience=2, split_ratio: float = 0.1
+    learning_rate=0.0005,
+    batch_size=256,
+    patience=2,
+    split_ratio: float = 0.1,
+    augmentations: list | None = None,
 ) -> float:
     data = get_data()
     X_train, X_test, y_train, y_test = train_test_split(data, test_size=0.3)
-    X_train_preprocessed = preprocess_audio(X_train)
+    X_train_preprocessed = preprocess_audio(X=X_train, augmentations=augmentations)
+    X_test_preprocessed = preprocess_audio(X=X_test)
 
-    model = load_model()
-
-    if model is None:
-        model = init_model(input_shape=X_train_preprocessed.shape[1:])
+    # model = load_model()
+    # if model is None:
+    model = init_model(input_shape=X_train_preprocessed.shape[1:])
 
     model = compile_model(model=model, learning_rate=learning_rate)
 
-    model = fit_model(
+    model, history = fit_model(
         model,
         X_train_preprocessed,
         y_train,
@@ -34,15 +38,18 @@ def train(
     )
 
     # Evaluate the model on the test data using `evaluate`
-    loss, accuracy = model.evaluate(X_test, y_test)
+    loss, accuracy = model.evaluate(X_test_preprocessed, y_test)
 
-    params = dict(
+    results_params = dict(
         context="train",
+        learning_rate=learning_rate,
+        data_split=split_ratio,
+        data_augmentations=augmentations,
         loss=loss,
         row_count=len(X_train_preprocessed),
     )
 
-    save_results(params=params, metrics=dict(accuracy=accuracy))
+    save_results(params=results_params, metrics=dict(accuracy=accuracy))
     save_model(model=model)
 
     return accuracy
