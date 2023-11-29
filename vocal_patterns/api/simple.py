@@ -23,9 +23,7 @@ async def pred(request: Request):
     data = await request.json()
     float_audio_array_as_list = data["float_audio_array_as_list"]
     float_audio_array = array(float_audio_array_as_list)
-    print(float_audio_array.shape)
     prediction = predict(float_audio_array)
-    print("#### prediction ####", prediction)
     return {"prediction": int(prediction)}
 
 

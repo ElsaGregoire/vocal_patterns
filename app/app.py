@@ -58,9 +58,6 @@ def add_logo():
     )
 
 
-print(add_logo())
-
-
 st.title("Vocal Pattern App")
 
 st.write("""🎈🎈🎈 Welcome to Voxalyze 🎈🎈🎈""")
