@@ -35,7 +35,7 @@ def fit_model(
         monitor="val_loss", patience=patience, restore_best_weights=True, verbose=1
     )
 
-    model = model.fit(
+    history = model.fit(
         X,
         y,
         # validation_data=validation_data,
@@ -45,7 +45,7 @@ def fit_model(
         callbacks=[es],
         verbose=0,
     )
-    return model
+    return model, history
 
 
 def evaluate_model(model, data):
