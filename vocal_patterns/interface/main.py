@@ -27,14 +27,14 @@ def train(
     X = data.drop(columns=["exercise", "technique", "filename"])
     y = data[["exercise"]]
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.1)
 
     X_train_preprocessed = preprocess_train(X_train, augmentations=augmentations)
-    X_test_preprocessed = preprocess_train(X_test)
+    X_val_preprocessed = preprocess_train(X_val)
 
     num_classes = 3
     y_train_cat = target_encoder(y_train, num_classes=num_classes)
-    y_test_cat = target_encoder(y_test, num_classes=num_classes)
+    y_val_cat = target_encoder(y_val, num_classes=num_classes)
 
     model = init_model(input_shape=X_train_preprocessed.shape[1:])
 
@@ -50,7 +50,7 @@ def train(
     )
 
     # Evaluate the model on the test data using `evaluate`
-    loss, accuracy = model.evaluate(X_test_preprocessed, y_test_cat)
+    loss, accuracy = model.evaluate(X_val_preprocessed, y_val_cat)
 
     results_params = dict(
         context="train",

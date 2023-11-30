@@ -67,7 +67,7 @@ def fit_model(
         epochs=20,
         batch_size=batch_size,
         callbacks=[es],
-        verbose=0,
+        verbose=1,
     )
     return model, history
 
