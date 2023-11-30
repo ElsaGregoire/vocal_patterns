@@ -36,30 +36,6 @@ def display_spectrogram(audio):
     st.pyplot()
 
 
-# def add_logo():
-#     st.markdown(
-#         """
-#         <style>
-#             [data-testid="stSidebarNav"] {
-#                 background-image: 'https://slack-files.com/T02NE0241-F067KRT4SGN-5673fc5b5b';
-#                 background-repeat: no-repeat;
-#                 padding-top: 120px;
-#                 background-position: 20px 20px;
-#             }
-#             [data-testid="stSidebarNav"]::before {
-#                 content: "Voxalize";
-#                 margin-left: 20px;
-#                 margin-top: 20px;
-#                 font-size: 30px;
-#                 position: relative;
-#                 top: 100px;
-#             }
-#         </style>
-#         """,
-#         unsafe_allow_html=True,
-#     )
-
-
 st.title("Voxalyze")
 
 st.write("""🎈🎈🎈 Welcome to Voxalyze 🎈🎈🎈""")
@@ -80,7 +56,10 @@ st.set_option("deprecation.showPyplotGlobalUse", False)
 
 float_audio_array = None
 
-if st.checkbox(" 🎙️ **Record your own sound** "):
+options = st.radio('Select an option', ('record', 'upload'))
+
+if options == 'record':
+
     # First title
     st.markdown("### Record your audio here ⬇️")
 
@@ -119,7 +98,8 @@ if st.checkbox(" 🎙️ **Record your own sound** "):
         audio_array = nr.reduce_noise(y = audio_array, sr=sample_rate, n_std_thresh_stationary=1.5,stationary=True)
         float_audio_array = audio_array.astype(float)
 
-if st.checkbox(" 🎵 **Upload a sound file** "):
+
+if options == 'upload':
     # Second title
     st.markdown("### Upload your audio file here ⬇️")
 
@@ -157,7 +137,3 @@ if float_audio_array is not None:
     # Get the response from the API
     resp = response.json()
     st.write(resp["prediction"])
-
-
-# else:
-# st.warning('Please upload an audio file.')
