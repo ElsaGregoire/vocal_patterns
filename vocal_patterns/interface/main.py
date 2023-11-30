@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from sklearn.model_selection import train_test_split
 from vocal_patterns.ml_logic.data import get_data
 from vocal_patterns.ml_logic.encoders import target_encoder
@@ -22,7 +23,14 @@ def train(
     augmentations: list | None = None,
 ) -> float:
     data = get_data()
-    data = preprocess_df(data)
+
+    try:
+        data = pd.read_pickle("preproc.pkl")
+        print("Loaded cached preprocessing data")
+    except FileNotFoundError:
+        print("No cached preprocessing data found, preprocessing now...")
+        data = preprocess_df(data)
+        data.to_pickle("preproc.pkl")
 
     X = data.drop(
         columns=[
