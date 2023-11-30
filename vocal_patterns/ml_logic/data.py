@@ -4,10 +4,11 @@ import pandas as pd
 from vocal_patterns.params import MODEL_TARGET
 
 
-def get_data():
+def get_training_data():
     if MODEL_TARGET == "local":
         script_dir = os.path.dirname(os.path.abspath(__file__))
         parent_dir = os.path.dirname(script_dir)
+        parent_dir = os.path.dirname(parent_dir)
         relative_path = "data"
         data_file_path = os.path.join(parent_dir, relative_path)
         csv_path = os.path.join(data_file_path, "dataset_tags.csv")
