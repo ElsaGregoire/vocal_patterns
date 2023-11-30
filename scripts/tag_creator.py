@@ -1,6 +1,9 @@
 import os
 import csv
 
+import pandas as pd
+from sklearn.model_selection import train_test_split
+
 # techniques = [
 #     "belt",
 #     "breathy",
@@ -15,14 +18,7 @@ import csv
 # ]
 
 
-def get_relative_path(relative_path):
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    full_path = os.path.join(script_dir, relative_path)
-
-    return full_path
-
-
-def generate_csv(root_path, csv_file_path):
+def generate_csv(base_dir, raw_data_folder_path, csv_file_path):
     exercises = [
         "arpeggios",
         "scales",
@@ -37,21 +33,41 @@ def generate_csv(root_path, csv_file_path):
                 "filename",
             ]
         )
-        for dirpath, dirnames, filenames in os.walk(root_path):
+        for dirpath, dirnames, filenames in os.walk(raw_data_folder_path):
             for filename in filenames:
                 if filename.endswith(".wav"):
-                    exercise = next((e for e in exercises if e in filename), "Other")
+                    exercise = next((e for e in exercises if e in filename), "other")
                     technique = dirpath.split("/")[-1]
                     full_path = os.path.join(str(dirpath), filename)
-                    csv_writer.writerow([full_path, exercise, technique, filename])
+                    # Each user will store data in their own file system, so we remove the base_dir from the full path and publish the relative path to the csv
+                    relative_path = os.path.relpath(full_path, base_dir)
+                    csv_writer.writerow([relative_path, exercise, technique, filename])
+
+
+def split_train_test(csv_file_path, train_file_path, test_file_path, test_size=0.2):
+    data = pd.read_csv(csv_file_path)
+    data_train, data_test = train_test_split(data, test_size=test_size)
+    data_train.to_csv(train_file_path, mode="x", index=False)
+    data_test.to_csv(test_file_path, mode="x", index=False)
+
+
+def generate_train_test_csv(data_folder_path, base_dir, test_size=0.2):
+    raw_data_folder_path = os.path.join(data_folder_path, "raw_data")
+    csv_path = os.path.join(raw_data_folder_path, "raw_data.csv")
+    train_file_path = os.path.join(data_folder_path, "raw_data_train.csv")
+    test_file_path = os.path.join(data_folder_path, "raw_data_test.csv")
+
+    generate_csv(base_dir, raw_data_folder_path, csv_path)
+    split_train_test(csv_path, train_file_path, test_file_path, test_size=test_size)
 
 
 if __name__ == "__main__":
     script_dir = os.path.dirname(os.path.abspath(__file__))
     parent_dir = os.path.dirname(script_dir)
-    relative_path = "vocal_patterns/data"
-    data_file_path = os.path.join(parent_dir, relative_path)
-    csv_path = os.path.join(data_file_path, "dataset_tags.csv")
+    base_dir = os.path.dirname(parent_dir)
+    relative_path = "data"
+    data_folder_path = os.path.join(parent_dir, relative_path)
 
-    generate_csv(data_file_path, csv_path)
-    print("CSV file has been generated at " + csv_path + ".")
+    generate_train_test_csv(data_folder_path, base_dir, test_size=0.2)
+
+    print("CSV file has been generated in " + data_folder_path + ".")

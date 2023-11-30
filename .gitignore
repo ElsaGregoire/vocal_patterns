@@ -2,10 +2,10 @@
 .coverage
 .ipynb_checkpoints
 .DS_Store
-raw_data/
-*.csv
+data/raw_data/
+
 **/__pycache__/
 .env
 .envrc
 
-vocal_patterns/data
+vocal_patterns/working_data
