@@ -144,11 +144,11 @@ if st.checkbox(" 🎵 **Upload a sound file** "):
 
 if float_audio_array is not None:
     #Reducing noise
-    float_audio_array = nr.reduce_noise(y = float_audio_array, sr=sample_rate, n_std_thresh_stationary=1.5,stationary=True)
-    st.audio(float_audio_array, format="audio/wav", sample_rate=sample_rate)
+    float_audio_array_r = nr.reduce_noise(y = float_audio_array, sr=sample_rate, n_std_thresh_stationary=1.5,stationary=True)
+    st.audio(float_audio_array_r, format="audio/wav", sample_rate=sample_rate)
     # Display the spectrogram
-    display_spectrogram(float_audio_array)
-    float_audio_array_as_list = float_audio_array.tolist()
+    display_spectrogram(float_audio_array_r)
+    float_audio_array_as_list = float_audio_array_r.tolist()
     # Send the audio to the API
     response = requests.post(
         voxlyze_predict_uri,
