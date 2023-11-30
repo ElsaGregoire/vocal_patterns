@@ -5,6 +5,8 @@ from io import BytesIO
 import matplotlib.pyplot as plt
 from audio_recorder_streamlit import audio_recorder
 import requests
+import noisereduce as nr
+import soundfile as sf
 
 import librosa
 import librosa.display
@@ -34,31 +36,31 @@ def display_spectrogram(audio):
     st.pyplot()
 
 
-def add_logo():
-    st.markdown(
-        """
-        <style>
-            [data-testid="stSidebarNav"] {
-                background-image: 'https://slack-files.com/T02NE0241-F067KRT4SGN-5673fc5b5b';
-                background-repeat: no-repeat;
-                padding-top: 120px;
-                background-position: 20px 20px;
-            }
-            [data-testid="stSidebarNav"]::before {
-                content: "Voxalize";
-                margin-left: 20px;
-                margin-top: 20px;
-                font-size: 30px;
-                position: relative;
-                top: 100px;
-            }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
+# def add_logo():
+#     st.markdown(
+#         """
+#         <style>
+#             [data-testid="stSidebarNav"] {
+#                 background-image: 'https://slack-files.com/T02NE0241-F067KRT4SGN-5673fc5b5b';
+#                 background-repeat: no-repeat;
+#                 padding-top: 120px;
+#                 background-position: 20px 20px;
+#             }
+#             [data-testid="stSidebarNav"]::before {
+#                 content: "Voxalize";
+#                 margin-left: 20px;
+#                 margin-top: 20px;
+#                 font-size: 30px;
+#                 position: relative;
+#                 top: 100px;
+#             }
+#         </style>
+#         """,
+#         unsafe_allow_html=True,
+#     )
 
 
-st.title("Vocal Pattern App")
+st.title("Voxalyze")
 
 st.write("""🎈🎈🎈 Welcome to Voxalyze 🎈🎈🎈""")
 
@@ -113,6 +115,8 @@ if st.checkbox(" 🎙️ **Record your own sound** "):
 
         # Convert audio_bytes to a NumPy array
         audio_array = np.frombuffer(audio_bytes, dtype=np.int16)
+        #Reducing noise
+        audio_array = nr.reduce_noise(y = audio_array, sr=sample_rate, n_std_thresh_stationary=1.5,stationary=True)
         float_audio_array = audio_array.astype(float)
 
 if st.checkbox(" 🎵 **Upload a sound file** "):
@@ -134,14 +138,17 @@ if st.checkbox(" 🎵 **Upload a sound file** "):
             BytesIO(uploaded_file1.read()), sr=sample_rate
         )
 
+
     with st.spinner("Generating the spectogram..."):
         time.sleep(2)
 
 if float_audio_array is not None:
+    #Reducing noise
+    float_audio_array = nr.reduce_noise(y = float_audio_array, sr=sample_rate, n_std_thresh_stationary=1.5,stationary=True)
+    st.audio(float_audio_array, format="audio/wav", sample_rate=sample_rate)
     # Display the spectrogram
     display_spectrogram(float_audio_array)
     float_audio_array_as_list = float_audio_array.tolist()
-
     # Send the audio to the API
     response = requests.post(
         voxlyze_predict_uri,
