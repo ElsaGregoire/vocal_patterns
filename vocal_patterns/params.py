@@ -10,7 +10,12 @@ MLFLOW_EXPERIMENT = os.environ["MLFLOW_EXPERIMENT"]
 MLFLOW_MODEL_NAME = os.environ["MLFLOW_MODEL_NAME"]
 PREFECT_FLOW_NAME = os.environ["PREFECT_FLOW_NAME"]
 
-LOCAL_DATA_PATH = os.path.join(os.path.expanduser("~"), ".lewagon", "mlops", "data")
+# LOCAL_DATA_PATH = os.path.join(os.path.expanduser("~"), ".lewagon", "mlops", "data")
+# LOCAL_REGISTRY_PATH = os.path.join(
+#     os.path.expanduser("~"), ".lewagon", "mlops", "training_outputs"
+# )
+
+LOCAL_DATA_PATH = os.path.join("/", "prod", "mlops", "data")
 LOCAL_REGISTRY_PATH = os.path.join(
-    os.path.expanduser("~"), ".lewagon", "mlops", "training_outputs"
+    "/", "prod", "mlops", "training_outputs"
 )

@@ -13,5 +13,5 @@ setup(name='vocal_patterns',
       test_suite='tests',
       # include_package_data: to install data from MANIFEST.in
       include_package_data=True,
-      scripts=['scripts/vocal_patterns-run'],
+      # scripts=['scripts/vocal_patterns-run'],
       zip_safe=False)

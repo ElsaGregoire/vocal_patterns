@@ -1,6 +1,8 @@
 # ----------------------------------
 #          INSTALL & TEST
 # ----------------------------------
+ML_DIR=~/.lewagon/mlops
+
 install_requirements:
 	@pip install -r requirements.txt
 
@@ -63,3 +65,13 @@ pypi_test:
 
 pypi:
 	@twine upload dist/* -u $(PYPI_USERNAME)
+
+reset_local_files:
+	rm -rf ${ML_DIR}
+	mkdir -p ~/.lewagon/mlops/data/
+	mkdir ~/.lewagon/mlops/data/raw
+	mkdir ~/.lewagon/mlops/data/processed
+	mkdir ~/.lewagon/mlops/training_outputs
+	mkdir ~/.lewagon/mlops/training_outputs/metrics
+	mkdir ~/.lewagon/mlops/training_outputs/models
+	mkdir ~/.lewagon/mlops/training_outputs/params

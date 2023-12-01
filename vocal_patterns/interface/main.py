@@ -12,6 +12,7 @@ from vocal_patterns.ml_logic.preprocessor import (
     preprocess_df,
 )
 from vocal_patterns.ml_logic.registry import load_model, save_model, save_results
+from keras import optimizers, layers, models
 
 
 # @mlflow_run
@@ -82,7 +83,8 @@ def predict(X_pred_processed: np.ndarray = None):
     if X_pred_processed is None:
         raise ValueError("No data to predict on!")
 
-    model = load_model()
+    # model = load_model()
+    model = models.load_model("/prod/mlops/training_outputs/models/20231121-160757.h5")
     assert model is not None
 
     y_pred = model.predict(X_pred_processed)
