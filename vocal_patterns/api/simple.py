@@ -26,17 +26,26 @@ async def pred(request: Request):
     float_audio_array = np.array(float_audio_array_as_list)
     processed_spectrograms = preprocess_predict(float_audio_array)
     raw_predictions = []
-
     for spectrogram in processed_spectrograms:
         spectrogram_expanded = np.expand_dims(spectrogram, axis=0)
         prediction = predict(spectrogram_expanded)
-        print("prediction", prediction)
         raw_predictions.append(prediction)
 
     # print("raw_predictions_sum", np.mean(raw_predictions, axis=0))
-    prediction = np.argmax(np.mean(raw_predictions, axis=0))
+    prediction_map = {
+        0: "Arpeggio",
+        1: "Other",
+        2: "Scale",
+    }
 
-    return {"prediction": int(prediction)}
+    mean_prediction = np.mean(raw_predictions, axis=0)
+    prediction = np.argmax(mean_prediction)
+    confidence = np.max(mean_prediction) * 100
+    prediction_str = prediction_map[prediction]
+
+    return {
+        "response": {"prediction": str(prediction_str), "confidence": int(confidence)}
+    }
 
 
 @app.get("/info")

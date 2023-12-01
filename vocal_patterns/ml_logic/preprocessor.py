@@ -55,12 +55,13 @@ def slice_waves(waveform, sr, snippet_duration=4, overlap=3):
 
     return new_4sec_arrays
 
-def stretch_waveforms(waveform, sr, target_duration=4.0):
 
-    current_duration = librosa.get_duration(y=waveform, sr=sr) # will be put ouo in float seconds
+def stretch_waveforms(waveform, sr, target_duration=4.0):
+    current_duration = librosa.get_duration(
+        y=waveform, sr=sr
+    )  # will be put ouo in float seconds
 
     if current_duration < target_duration:
-
         stretch_factor = current_duration / target_duration
         # Stretch the audio
         stretched_audio = librosa.effects.time_stretch(waveform, rate=stretch_factor)
@@ -97,9 +98,12 @@ def preprocess_df(data: pd.DataFrame, augmentations: list | None = None):
 
 def preprocess_predict(waveform: np.ndarray):
     spectrograms = []
-    slice_waveforms = slice_waves(waveform, sr=sample_rate)
-    for waveforms in slice_waveforms:
-        normalized_spectrogram = scaled_spectrogram(waveforms, sr=sample_rate)
+    stretched_waveform = stretch_waveforms(
+        waveform, sr=sample_rate, target_duration=4.0
+    )
+    slice_waveforms = slice_waves(stretched_waveform, sr=sample_rate)
+    for waveform in slice_waveforms:
+        normalized_spectrogram = scaled_spectrogram(waveform, sr=sample_rate)
         spectrograms.append(normalized_spectrogram)
 
     return spectrograms
