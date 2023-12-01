@@ -33,7 +33,7 @@ def scaled_spectrogram(wave_trunc, sr):
     max_value = np.max(power_to_db)
     # NORMALIZING gray array so that all values lie between [0, 1]
     normalized_spectrogram = (power_to_db - min_value) / (max_value - min_value)
-    return normalized_spectrogram
+    return np.expand_dims(normalized_spectrogram, axis=-1)
 
 
 def slice_waves(waveform, sr, snippet_duration=4, overlap=3):
@@ -55,6 +55,22 @@ def slice_waves(waveform, sr, snippet_duration=4, overlap=3):
 
     return new_4sec_arrays
 
+def stretch_waveforms(waveform, sr, target_duration=4.0):
+
+    current_duration = librosa.get_duration(y=waveform, sr=sr) # will be put ouo in float seconds
+
+    if current_duration < target_duration:
+
+        stretch_factor = current_duration / target_duration
+        # Stretch the audio
+        stretched_audio = librosa.effects.time_stretch(waveform, rate=stretch_factor)
+        waveform = stretched_audio
+        return waveform
+
+    else:
+        # else return the original audio
+        return waveform
+
 
 def preprocess_df(data: pd.DataFrame, augmentations: list | None = None):
     data_list = []
@@ -62,6 +78,9 @@ def preprocess_df(data: pd.DataFrame, augmentations: list | None = None):
         exercise = row["exercise"]
         technique = row["technique"]
         waveform, sr = librosa.load(row["path"], sr=sample_rate)
+
+        stretch_waveforms(waveform, sr, target_duration=4.0)
+
         slice_waveforms = slice_waves(waveform, sr)
         for w in slice_waveforms:
             normalized_spectrogram = scaled_spectrogram(w, sr)
@@ -72,8 +91,8 @@ def preprocess_df(data: pd.DataFrame, augmentations: list | None = None):
                     "technique": technique,
                 }
             )
-
-    return pd.DataFrame(data_list)
+    set_df = pd.DataFrame(data_list)
+    return set_df
 
 
 def preprocess_predict(waveform: np.ndarray):
