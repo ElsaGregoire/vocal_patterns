@@ -11,15 +11,20 @@ import soundfile as sf
 import librosa
 import librosa.display
 
+
 st.set_page_config(
-    page_title="Vocal Pattern App",
+    page_title="Voxalyze",
     page_icon="🎙️",
     initial_sidebar_state="auto",
 )
 
+
+st.sidebar.image('sounds/Voxalyze.png', use_column_width=True)
+
 voxlyze_base_uri = "http://localhost:8000/"
 voxlyze_predict_uri = voxlyze_base_uri + "predict"
 sample_rate = 22050
+
 
 
 def display_spectrogram(audio):
@@ -38,10 +43,10 @@ def display_spectrogram(audio):
 
 st.title("Voxalyze")
 
-st.write("""🎈🎈🎈 Welcome to Voxalyze 🎈🎈🎈""")
+st.write("""🎈🎈🎈 Welcome to our Vocal Pattern App 🎈🎈🎈""")
 
 st.write(
-    """Here you can record a sound 🎙️ or upload a sound file 🎵 of maximum 6 seconds.
+    """Here you can record a sound 🎙️ or upload a sound file 🎵 between 4 and 6 seconds.
          Our app will show you the *spectogram* 📊 of the sound and will classify the sound as an **Arpegio**,
          a **Scale** or **Other type** of sound (as *melodies*, *long notes*, a funk and beautiful *improvisation* 🕺🏾, .."""
     ""
@@ -50,6 +55,13 @@ st.write(
 st.subheader(
     "Please, select one of the options below", divider="red"
 )  # Adding a divider
+
+
+
+# add_selectbox = st.sidebar.radio(
+#     "Where would you like to go?",
+#     ("App", "Knowledge"))
+
 
 
 st.set_option("deprecation.showPyplotGlobalUse", False)
@@ -95,6 +107,8 @@ if options == 'record':
         #float_audio_array_r, sr = librosa.load(
         #BytesIO(float_audio_array.read()), sr=sample_rate)
         display_spectrogram(float_audio_array)
+        st.write('If your result is a **1**, you are singuing an *Arpegio*. If it is a **2** you are singuing a *Scale*. If your result is **0** you are singuing *something different*.')
+        st.write('### Your singuing result is ⬇️')
         float_audio_array_as_list = float_audio_array.tolist()
 
 
@@ -159,6 +173,8 @@ if float_audio_array is not None:
     st.audio(float_audio_array, format="audio/wav", sample_rate=sample_rate)
 # Display the spectrogram
     display_spectrogram(float_audio_array)
+    st.write('If your result is a **1**, you are singuing an *Arpegio*. If it is a **2** you are singuing a *Scale*. If your result is **0** you are singuing *something different*.')
+    st.write('### Your singuing result is ⬇️')
     float_audio_array_as_list = float_audio_array.tolist()
 # Send the audio to the API
 
