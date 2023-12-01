@@ -6,25 +6,6 @@ import pandas as pd
 
 sample_rate = 22050
 
-# def standardize_audio(waveform, sr):
-#     # Set the target length to 6 seconds
-#     start_sample = int(0.0 * sr)
-#     target_length_sec = 6.0
-#     target_length_samples = int(target_length_sec * sr)  # ex: 6sec * 22 050 = 132 300
-#     # Check the current length of the audio
-#     current_length_sample = len(waveform)  # 165 853
-
-#     if current_length_sample > target_length_samples:
-#         # If the current length is longer, truncate the audio to 6 seconds
-#         wave_trunc = waveform[start_sample:target_length_samples]
-#     else:
-#         # If the current length is shorter, pad the audio to 6 seconds
-#         padded_signal = librosa.util.pad_center(waveform, size=target_length_samples)
-#         # Assign the padded signal to the truncated signal
-#         wave_trunc = padded_signal
-
-#     return wave_trunc  # this is our new wave_truncated
-
 
 def scaled_spectrogram(wave_trunc, sr):
     mel_spectrogram = librosa.feature.melspectrogram(y=wave_trunc, sr=sr)
