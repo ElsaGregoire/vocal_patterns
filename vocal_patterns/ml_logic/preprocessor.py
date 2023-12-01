@@ -33,7 +33,7 @@ def scaled_spectrogram(wave_trunc, sr):
     max_value = np.max(power_to_db)
     # NORMALIZING gray array so that all values lie between [0, 1]
     normalized_spectrogram = (power_to_db - min_value) / (max_value - min_value)
-    return normalized_spectrogram
+    return np.expand_dims(normalized_spectrogram, axis=-1)
 
 
 def slice_waves(waveform, sr, snippet_duration=4, overlap=3):
@@ -91,8 +91,8 @@ def preprocess_df(data: pd.DataFrame, augmentations: list | None = None):
                     "technique": technique,
                 }
             )
-
-    return pd.DataFrame(data_list)
+    set_df = pd.DataFrame(data_list)
+    return set_df
 
 
 def preprocess_predict(waveform: np.ndarray):
