@@ -11,21 +11,36 @@ def init_model(input_shape: Tuple) -> Model:
     Initialize the CNN model
     """
     model = Sequential()
-    model.add(layers.Conv2D(8, (5,5), input_shape=input_shape, strides=(2, 2), padding='same', activation="relu"))
+    model.add(
+        layers.Conv2D(
+            8,
+            (5, 5),
+            input_shape=input_shape,
+            strides=(2, 2),
+            padding="same",
+            activation="relu",
+        )
+    )
     model.add(layers.BatchNormalization())
 
-    model.add(layers.Conv2D(16, (3,3), strides=(2, 2), padding='same', activation="relu"))
+    model.add(
+        layers.Conv2D(16, (3, 3), strides=(2, 2), padding="same", activation="relu")
+    )
     model.add(layers.BatchNormalization())
 
-    model.add(layers.Conv2D(32, (3,3), strides=(2, 2), padding='same', activation="relu"))
+    model.add(
+        layers.Conv2D(32, (3, 3), strides=(2, 2), padding="same", activation="relu")
+    )
     model.add(layers.BatchNormalization())
 
-    model.add(layers.Conv2D(64, (3,3), strides=(2, 2), padding='same', activation="relu"))
+    model.add(
+        layers.Conv2D(64, (3, 3), strides=(2, 2), padding="same", activation="relu")
+    )
     model.add(layers.BatchNormalization())
 
     model.add(layers.Flatten())
-    model.add(layers.Dense(64, activation='relu'))
-    model.add(layers.Dense(3, activation='softmax'))
+    model.add(layers.Dense(64, activation="relu"))
+    model.add(layers.Dense(3, activation="softmax"))
 
     print("✅ Model initialized")
 
@@ -67,17 +82,14 @@ def fit_model(
         epochs=20,
         batch_size=batch_size,
         callbacks=[es],
-        verbose=0,
+        verbose=1,
     )
     return model, history
 
 
 def evaluate_model(
-        model: Model,
-        X: np.ndarray,
-        y: np.ndarray,
-        batch_size=32
-    ) -> Tuple[Model, dict]:
+    model: Model, X: np.ndarray, y: np.ndarray, batch_size=32
+) -> Tuple[Model, dict]:
     """
     Evaluate trained model performance on the dataset
     """
@@ -94,7 +106,7 @@ def evaluate_model(
         batch_size=batch_size,
         verbose=0,
         # callbacks=None,
-        return_dict=True
+        return_dict=True,
     )
 
     loss = metrics["loss"]

@@ -37,3 +37,6 @@ memoized-property
 termcolor
 ipython
 colorama
+
+# frontend
+noisereduce
