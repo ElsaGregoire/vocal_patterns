@@ -20,38 +20,13 @@ st.set_page_config(
     initial_sidebar_state="auto",
 
 )
-
-
-def add_logo():
-    st.markdown(
-        """
-        <style>
-            [data-testid="stSidebarNav"] {
-                background-image: url(https://slack-files.com/T02NE0241-F067KRT4SGN-5673fc5b5b);
-                background-repeat: no-repeat;
-                padding-top: 120px;
-                background-position: 20px 20px;
-            }
-            [data-testid="stSidebarNav"]::before {
-                content: "Voxalize";
-                margin-left: 20px;
-                margin-top: 20px;
-                font-size: 30px;
-                position: relative;
-                top: 100px;
-            }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-print(add_logo())
-
+st.sidebar.image('voxalyze.png', use_column_width=True)
 
 # Introduction
-st.title('Vocal Pattern App')
+st.title('Voxalyze')
 
-st.write('''🎈🎈🎈 Welcome to Voxalyze 🎈🎈🎈''')
-st.write('''Here you can record a sound 🎙️ or upload a sound file 🎵 of maximum 6 seconds.
+st.write('''🎈🎈🎈 Welcome to our Vocal Pattern App 🎈🎈🎈''')
+st.write('''Here you can record a sound 🎙️ or upload a sound file 🎵 between 4 and 6 secods.
          Our app will show you the *spectogram* 📊 of the sound and will classify the sound as an **Arpegio**,
          a **Scale** or **Other type** of sound (as *melodies*, *long notes*, a funk and beautiful *improvisation* 🕺🏾, ...)''')
 
@@ -110,7 +85,7 @@ st.pyplot()
 #Scales
 st.write('''In music theory, a scale is any set of musical notes ordered by
 fundamental frequency or pitch. A scale ordered by increasing pitch is an
-ascending scale, and a scale ordered by decreasing pitch is a descending scale *Wikipedia*''')
+ascending scale, and a scale ordered by decreasing pitch is a descending scale. *Wikipedia*''')
 
 # Calling the audio file
 st.audio(file_path_scale, format="audio/wav")
