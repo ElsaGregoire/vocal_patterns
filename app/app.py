@@ -55,7 +55,7 @@ def show_response(resp):
 def response_display(float_audio_array):
     # float_audio_array = reduce_noise(float_audio_array, sample_rate)
     st.audio(float_audio_array, format="audio/wav", sample_rate=sample_rate)
-    st.success("Audio recognized successfully!✅")
+    st.success("Audio recognized successfully! ✅")
 
     display_spectrogram(float_audio_array)
 
