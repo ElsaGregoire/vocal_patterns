@@ -19,12 +19,17 @@ st.set_page_config(
 )
 
 
-st.sidebar.image('sounds/Voxalyze.png', use_column_width=True)
+st.sidebar.image("voxalyze.png", use_column_width=True)
 
 voxlyze_base_uri = "http://localhost:8000/"
 voxlyze_predict_uri = voxlyze_base_uri + "predict"
 sample_rate = 22050
 
+prediction_map = {
+    0: "Arpeggio",
+    1: "Other",
+    2: "Scale",
+}
 
 
 def display_spectrogram(audio):
@@ -57,21 +62,18 @@ st.subheader(
 )  # Adding a divider
 
 
-
 # add_selectbox = st.sidebar.radio(
 #     "Where would you like to go?",
 #     ("App", "Knowledge"))
-
 
 
 st.set_option("deprecation.showPyplotGlobalUse", False)
 
 float_audio_array = None
 
-options = st.radio('Select an option', ('record', 'upload'))
+options = st.radio("Select an option", ("record", "upload"))
 
-if options == 'record':
-
+if options == "record":
     # First title
     st.markdown("### Record your audio here ⬇️")
 
@@ -88,10 +90,9 @@ if options == 'record':
     if audio_bytes is None:
         st.info("Please record a sound")
 
-
         # with st.spinner("Uploading and processing audio..."):
-        #st.audio(audio_bytes, format="audio/wav")
-        #st.success("Audio uploaded successfully!✅")
+        # st.audio(audio_bytes, format="audio/wav")
+        # st.success("Audio uploaded successfully!✅")
 
     # Plot spectrogram for recorded audio
     else:
@@ -101,29 +102,33 @@ if options == 'record':
         st.spinner("Generating the spectrogram...")
         # Convert audio_bytes to a NumPy array
         audio_array = np.frombuffer(audio_bytes, dtype=np.int16)
-        #Reducing noise
-        audio_array = nr.reduce_noise(y = audio_array, sr=sample_rate, n_std_thresh_stationary=1.5,stationary=True)
+        # Reducing noise
+        # audio_array = nr.reduce_noise(
+        #     y=audio_array, sr=sample_rate, n_std_thresh_stationary=1.5, stationary=True
+        # )
         float_audio_array = audio_array.astype(float)
-        #float_audio_array_r, sr = librosa.load(
-        #BytesIO(float_audio_array.read()), sr=sample_rate)
+        # float_audio_array_r, sr = librosa.load(
+        # BytesIO(float_audio_array.read()), sr=sample_rate)
         display_spectrogram(float_audio_array)
-        st.write('If your result is a **1**, you are singuing an *Arpegio*. If it is a **2** you are singuing a *Scale*. If your result is **0** you are singuing *something different*.')
-        st.write('### Your singuing result is ⬇️')
+        st.write(
+            "If your result is a **1**, you are singuing an *Arpegio*. If it is a **2** you are singuing a *Scale*. If your result is **0** you are singuing *something different*."
+        )
+        st.write("### Your singuing result is ⬇️")
         float_audio_array_as_list = float_audio_array.tolist()
 
-
-# Display the spectrogram
+        # Display the spectrogram
 
         float_audio_array_as_list = float_audio_array.tolist()
-# Send the audio to the API
+        # Send the audio to the API
 
         response = requests.post(
             voxlyze_predict_uri,
             json={"float_audio_array_as_list": float_audio_array_as_list},
-)
-# Get the response from the API
+        )
+        # Get the response from the API
         resp = response.json()
-        st.write(resp["prediction"])
+        prediction = prediction_map[resp["prediction"]]
+        st.write(f"# {prediction} #")
 
         st.stop()
 
@@ -148,8 +153,8 @@ if options == 'record':
 #         )
 
 
-    # with st.spinner("Generating the spectogram..."):
-    #     time.sleep(2)
+# with st.spinner("Generating the spectogram..."):
+#     time.sleep(2)
 
 else:
     st.markdown("### Upload your audio file here ⬇️")
@@ -168,20 +173,34 @@ else:
 
 
 if float_audio_array is not None:
-#Reducing noise
-    float_audio_array = nr.reduce_noise(y = float_audio_array, sr=sample_rate, n_std_thresh_stationary=1.5,stationary=True)
+    # Reducing noise
+    # float_audio_array = nr.reduce_noise(
+    #     y=float_audio_array,
+    #     sr=sample_rate,
+    #     n_std_thresh_stationary=1.5,
+    #     stationary=True,
+    # )
     st.audio(float_audio_array, format="audio/wav", sample_rate=sample_rate)
-# Display the spectrogram
+    # Display the spectrogram
     display_spectrogram(float_audio_array)
-    st.write('If your result is a **1**, you are singuing an *Arpegio*. If it is a **2** you are singuing a *Scale*. If your result is **0** you are singuing *something different*.')
-    st.write('### Your singuing result is ⬇️')
+    st.write(
+        "If your result is a **1**, you are singing an *Arpeggio*. If it is a **2** you are singuing a *Scale*. If your result is **0** you are singuing *something different*."
+    )
+
+    prediction_map = {
+        0: "Arpeggio",
+        1: "Other",
+        2: "Scale",
+    }
+    st.write("### Your recording result is ⬇️")
     float_audio_array_as_list = float_audio_array.tolist()
-# Send the audio to the API
+    # Send the audio to the API
 
     response = requests.post(
         voxlyze_predict_uri,
         json={"float_audio_array_as_list": float_audio_array_as_list},
-)
-# Get the response from the API
+    )
+    # Get the response from the API
     resp = response.json()
-    st.write(resp["prediction"])
+    prediction = prediction_map[resp["prediction"]]
+    st.write(f"# {prediction} #")

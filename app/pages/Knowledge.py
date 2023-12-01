@@ -20,7 +20,7 @@ st.set_page_config(
     initial_sidebar_state="auto",
 
 )
-st.sidebar.image('sounds/Voxalyze.png', use_column_width=True)
+st.sidebar.image('voxalyze.png', use_column_width=True)
 
 # Introduction
 st.title('Voxalyze')
