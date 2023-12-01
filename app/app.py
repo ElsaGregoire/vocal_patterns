@@ -65,7 +65,6 @@ if options == 'record':
 
     # Audio recorder
     audio_bytes = audio_recorder(
-        energy_threshold=(-1.0, 1.0),
         pause_threshold=6.0,
         text="",
         recording_color="#6aa36f",
