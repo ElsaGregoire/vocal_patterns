@@ -75,16 +75,14 @@ def train(
     return model
 
 
-def predict(X_pred_processed: np.ndarray = None):
+def predict(X_pred_processed: np.ndarray):
     if X_pred_processed is None:
         raise ValueError("No data to predict on!")
 
     model = load_model()
     assert model is not None
 
-    y_pred = model.predict(X_pred_processed)
-    print(y_pred)
-
+    y_pred = model.predict(X_pred_processed)[0]
     return y_pred
 
 
