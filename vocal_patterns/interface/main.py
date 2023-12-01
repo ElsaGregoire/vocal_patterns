@@ -40,13 +40,13 @@ def train(
     )
     y = data[["exercise"]]
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.1)
     X_train_array = np.stack(X_train, axis=0)
-    X_test_array = np.stack(X_test, axis=0)
+    X_val_array = np.stack(X_val, axis=0)
 
     num_classes = 3
     y_train_cat = target_encoder(y_train, num_classes=num_classes)
-    y_test_cat = target_encoder(y_test, num_classes=num_classes)
+    y_val_cat = target_encoder(y_val, num_classes=num_classes)
 
     model = init_model(input_shape=X_train_array.shape[1:])
 
@@ -61,8 +61,8 @@ def train(
         validation_split=split_ratio,
     )
 
-    # Evaluate the model on the test data using `evaluate`
-    loss, accuracy = model.evaluate(X_test_array, y_test_cat)
+    # Evaluate the model on the validation data using `evaluate`
+    loss, accuracy = model.evaluate(X_val_array, y_val_cat)
 
     results_params = dict(
         context="train",
