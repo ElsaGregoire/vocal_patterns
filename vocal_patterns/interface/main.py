@@ -32,12 +32,7 @@ def train(
         data = preprocess_df(data)
         data.to_pickle("preproc.pkl")
 
-    X = data.drop(
-        columns=[
-            "exercise",
-            "technique",
-        ]
-    )
+    X = data["spectrogram"]
     y = data[["exercise"]]
 
     X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.1)
