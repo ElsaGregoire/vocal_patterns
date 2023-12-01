@@ -11,6 +11,8 @@ import soundfile as sf
 import librosa
 import librosa.display
 
+sample_rate = 22050
+
 
 def reduce_noise(float_audio_array, sample_rate):
     return nr.reduce_noise(
@@ -75,7 +77,6 @@ st.sidebar.image("voxalyze.png", use_column_width=True)
 # voxlyze_base_uri = "http://localhost:8000/"
 voxlyze_base_uri = "https://vocalpatterns-mqofeud75a-ew.a.run.app/"
 voxlyze_predict_uri = voxlyze_base_uri + "predict"
-sample_rate = 22050
 
 
 st.title("Voxalyze")
@@ -115,15 +116,15 @@ if options == "record":
         neutral_color="565656",
         icon_name="microphone",
         icon_size="6x",
+        sample_rate=sample_rate,
     )
 
     if audio_bytes is None:
         st.info("Please record a sound")
     else:
         st.spinner("Generating the spectrogram...")
-        audio_array = np.frombuffer(audio_bytes, dtype=np.int16)
+        audio_array = np.frombuffer(audio_bytes, dtype=np.int32)
         float_audio_array = audio_array.astype(float)
-        print("###recorded####", float_audio_array.shape)
         response_display(float_audio_array)
         st.stop()
 
