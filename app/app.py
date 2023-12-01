@@ -72,7 +72,8 @@ st.set_page_config(
 
 st.sidebar.image("voxalyze.png", use_column_width=True)
 
-voxlyze_base_uri = "http://localhost:8000/"
+# voxlyze_base_uri = "http://localhost:8000/"
+voxlyze_base_uri = "https://vocalpatterns-mqofeud75a-ew.a.run.app/"
 voxlyze_predict_uri = voxlyze_base_uri + "predict"
 sample_rate = 22050
 
