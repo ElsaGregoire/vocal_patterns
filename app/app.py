@@ -76,64 +76,84 @@ if options == 'record':
 
     if audio_bytes is None:
         st.info("Please record a sound")
-        st.stop()
 
-        with st.spinner("Uploading and processing audio..."):
-            st.audio(audio_bytes, format="audio/wav")
-            time.sleep(2)
-            st.success("Audio uploaded successfully!✅")
+
+        # with st.spinner("Uploading and processing audio..."):
+        #st.audio(audio_bytes, format="audio/wav")
+        #st.success("Audio uploaded successfully!✅")
 
     # Plot spectrogram for recorded audio
-    if audio_bytes is not None:
-        with st.spinner("Uploading and processing audio..."):
-            st.audio(audio_bytes, format="audio/wav", sample_rate=sample_rate)
-            time.sleep(2)
-            st.success("Audio recognized successfully!✅")
-        with st.spinner("Generating the spectrogram..."):
-            time.sleep(4)
+    else:
+        st.spinner("Uploading and processing audio...")
+        st.audio(audio_bytes, format="audio/wav", sample_rate=sample_rate)
+        st.success("Audio recognized successfully!✅")
 
+        st.spinner("Generating the spectrogram...")
         # Convert audio_bytes to a NumPy array
         audio_array = np.frombuffer(audio_bytes, dtype=np.int16)
         #Reducing noise
         audio_array = nr.reduce_noise(y = audio_array, sr=sample_rate, n_std_thresh_stationary=1.5,stationary=True)
         float_audio_array = audio_array.astype(float)
+        #float_audio_array_r, sr = librosa.load(
+        #BytesIO(float_audio_array.read()), sr=sample_rate)
+        display_spectrogram(float_audio_array)
+        float_audio_array_as_list = float_audio_array.tolist()
+
+        st.stop()
 
 
-if options == 'upload':
-    # Second title
+# #if options == 'Upload your file ':
+#     # Second title
+#     st.markdown("### Upload your audio file here ⬇️")
+
+#     # Audio uploaded
+#     uploaded_file1 = st.file_uploader("Pick a wave file!", type="wav", key="sample1")
+
+#     if uploaded_file1 is None:
+#         st.info("Please upload a wave file.")
+#         st.stop()
+
+#     with st.spinner("Checking the audio..."):
+#         time.sleep(3)
+#         st.success("Audio recogniced successfully!✅")
+#         # Load the uploaded audio file with a specified sampling rate
+#         float_audio_array, sr = librosa.load(
+#             BytesIO(uploaded_file1.read()), sr=sample_rate
+#         )
+
+
+    # with st.spinner("Generating the spectogram..."):
+    #     time.sleep(2)
+
+else:
     st.markdown("### Upload your audio file here ⬇️")
-
-    # Audio uploaded
     uploaded_file1 = st.file_uploader("Pick a wave file!", type="wav", key="sample1")
 
     if uploaded_file1 is None:
         st.info("Please upload a wave file.")
         st.stop()
 
-    with st.spinner("Checking the audio..."):
-        time.sleep(3)
+    if uploaded_file1 is not None:
+        st.spinner("Checking the audio...")
         st.success("Audio recogniced successfully!✅")
-        # Load the uploaded audio file with a specified sampling rate
         float_audio_array, sr = librosa.load(
             BytesIO(uploaded_file1.read()), sr=sample_rate
         )
 
 
-    with st.spinner("Generating the spectogram..."):
-        time.sleep(2)
-
 if float_audio_array is not None:
-    #Reducing noise
+#Reducing noise
     float_audio_array = nr.reduce_noise(y = float_audio_array, sr=sample_rate, n_std_thresh_stationary=1.5,stationary=True)
     st.audio(float_audio_array, format="audio/wav", sample_rate=sample_rate)
-    # Display the spectrogram
+# Display the spectrogram
     display_spectrogram(float_audio_array)
     float_audio_array_as_list = float_audio_array.tolist()
-    # Send the audio to the API
+# Send the audio to the API
+
     response = requests.post(
         voxlyze_predict_uri,
         json={"float_audio_array_as_list": float_audio_array_as_list},
-    )
-    # Get the response from the API
+)
+# Get the response from the API
     resp = response.json()
     st.write(resp["prediction"])
