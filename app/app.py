@@ -33,7 +33,7 @@ def reduce_noise(float_audio_array, sample_rate):
 
 def display_spectrogram(audio):
     sr = 22050  # You need to define the sampling rate for audio_bytes
-    plt.figure(figsize=(10, 4))
+    plt.figure(figsize=(10, 8))
     librosa.display.specshow(
         librosa.amplitude_to_db(np.abs(librosa.stft(audio)), ref=np.max),
         y_axis="log",
