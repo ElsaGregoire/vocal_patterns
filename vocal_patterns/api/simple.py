@@ -3,8 +3,11 @@ import numpy as np
 
 from vocal_patterns.interface.main import predict
 from vocal_patterns.ml_logic.preprocessor import preprocess_predict
+from vocal_patterns.ml_logic.registry import load_model
+
 
 app = FastAPI()
+app.state.model = load_model()
 
 
 # Define a root `/` endpoint
@@ -28,7 +31,9 @@ async def pred(request: Request):
     raw_predictions = []
     for spectrogram in processed_spectrograms:
         spectrogram_expanded = np.expand_dims(spectrogram, axis=0)
-        prediction = predict(spectrogram_expanded)
+        prediction = predict(
+            X_pred_processed=spectrogram_expanded, model=app.state.model
+        )
         raw_predictions.append(prediction)
 
     # print("raw_predictions_sum", np.mean(raw_predictions, axis=0))
