@@ -1,6 +1,5 @@
 import streamlit as st
 import numpy as np
-import time
 from io import BytesIO
 import matplotlib.pyplot as plt
 from audio_recorder_streamlit import audio_recorder
@@ -11,7 +10,17 @@ import soundfile as sf
 import librosa
 import librosa.display
 
+from vocal_patterns.params import DEPLOYMENT
+
+
 sample_rate = 22050
+
+voxlyze_base_uri = (
+    "http://localhost:8000/"
+    if DEPLOYMENT == "local"
+    else "https://vocalpatterns-mqofeud75a-ew.a.run.app/"
+)
+voxlyze_predict_uri = voxlyze_base_uri + "predict"
 
 
 def reduce_noise(float_audio_array, sample_rate):
@@ -97,10 +106,6 @@ with col3:
 
 
 st.sidebar.image("voxalyze.png", use_column_width=True)
-
-voxlyze_base_uri = "http://localhost:8000/"
-#voxlyze_base_uri = "https://vocalpatterns-mqofeud75a-ew.a.run.app/"
-voxlyze_predict_uri = voxlyze_base_uri + "predict"
 
 
 col1, col2, col3 = st.columns([3,2,3])

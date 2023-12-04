@@ -1,3 +1,4 @@
+import os
 import librosa
 import librosa.display
 import numpy as np
@@ -54,30 +55,55 @@ def stretch_waveforms(waveform, sr, target_duration=4.0):
         return waveform
 
 
-def preprocess_df(data: pd.DataFrame, augmentations: list | None = None):
-    data_list = []
-    for index, row in data.iterrows():
-        exercise = row["exercise"]
-        technique = row["technique"]
-        waveform, sr = librosa.load(row["path"], sr=sample_rate)
+def noise_up_waveform(waveform, noise_level=0.001):
+    np.random.normal(size=len(waveform))
+    return waveform + (noise_level * np.random.normal(size=len(waveform)))
 
-        stretch_waveforms(waveform, sr, target_duration=4.0)
 
-        slice_waveforms = slice_waves(waveform, sr)
-        for w in slice_waveforms:
-            normalized_spectrogram = scaled_spectrogram(w, sr)
-            data_list.append(
-                {
-                    "spectrogram": normalized_spectrogram,
-                    "exercise": exercise,
-                    "technique": technique,
-                }
-            )
-    set_df = pd.DataFrame(data_list)
+def preprocess_df(
+    data: pd.DataFrame, augmentations: list | None = None, clearCashed: bool = False
+):
+    def process_data():
+        data_list = []
+        for index, row in data.iterrows():
+            exercise = row["exercise"]
+            technique = row["technique"]
+            waveform, sr = librosa.load(row["path"], sr=sample_rate)
+
+            stretch_waveforms(waveform, sr, target_duration=4.0)
+
+            slice_waveforms = slice_waves(waveform, sr)
+            for w in slice_waveforms:
+                normalized_spectrogram = scaled_spectrogram(w, sr)
+                data_list.append(
+                    {
+                        "spectrogram": normalized_spectrogram,
+                        "exercise": exercise,
+                        "technique": technique,
+                    }
+                )
+        set_df = pd.DataFrame(data_list)
+        return set_df
+
+    if clearCashed == True:
+        try:
+            os.remove("preproc.pkl")
+            print("Removed cached data")
+        except FileNotFoundError:
+            print("No cached data to remove")
+    try:
+        set_df = pd.read_pickle("preproc.pkl")
+        print("Loaded cached preprocessing data")
+    except FileNotFoundError:
+        print("No cached preprocessing data found, preprocessing now...")
+        set_df = process_data()
+        set_df.to_pickle("preproc.pkl")
+
     return set_df
 
 
 def preprocess_predict(waveform: np.ndarray):
+    waveform = noise_up_waveform(waveform, noise_level=0.001)
     spectrograms = []
     stretched_waveform = stretch_waveforms(
         waveform, sr=sample_rate, target_duration=4.0
