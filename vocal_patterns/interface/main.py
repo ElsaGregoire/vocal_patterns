@@ -12,10 +12,10 @@ from vocal_patterns.ml_logic.preprocessor import (
     preprocess_df,
 )
 from vocal_patterns.ml_logic.registry import load_model, save_model, save_results
-from keras import optimizers, layers, models
+from vocal_patterns.ml_logic.registry import mlflow_run, mlflow_transition_model
 
 
-# @mlflow_run
+@mlflow_run
 def train(
     learning_rate=0.001,
     batch_size=32,
@@ -24,14 +24,7 @@ def train(
     augmentations: list | None = None,
 ) -> float:
     data = get_data()
-
-    try:
-        data = pd.read_pickle("preproc.pkl")
-        print("Loaded cached preprocessing data")
-    except FileNotFoundError:
-        print("No cached preprocessing data found, preprocessing now...")
-        data = preprocess_df(data)
-        data.to_pickle("preproc.pkl")
+    data = preprocess_df(data, clearCashed=False)
 
     X = data["spectrogram"]
     y = data[["exercise"]]
@@ -76,12 +69,10 @@ def train(
     return model
 
 
-def predict(X_pred_processed: np.ndarray):
+def predict(X_pred_processed: np.ndarray, model=None):
     if X_pred_processed is None:
         raise ValueError("No data to predict on!")
 
-    # model = load_model()
-    model = models.load_model("/prod/mlops/training_outputs/models/20231201-142914.h5")
     assert model is not None
 
     y_pred = model.predict(X_pred_processed)[0]
