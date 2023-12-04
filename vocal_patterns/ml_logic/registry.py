@@ -97,15 +97,13 @@ def load_model(stage="Production") -> keras.Model:
         )
 
         # Get the latest model version name by the timestamp on disk
-        # local_model_directory = os.path.join(LOCAL_REGISTRY_PATH, "models")
-        # local_model_paths = glob.glob(f"{local_model_directory}/*")
+        local_model_directory = os.path.join(LOCAL_REGISTRY_PATH, "models")
+        local_model_paths = glob.glob(f"{local_model_directory}/*")
 
-        # if not local_model_paths:
-        #     return None
+        if not local_model_paths:
+            return None
 
-        # most_recent_model_path_on_disk = sorted(local_model_paths)[-1]
-        # print(most_recent_model_path_on_disk)
-        most_recent_model_path_on_disk = "/prod/mlops/training_outputs/models/20231121-160757.h5"
+        most_recent_model_path_on_disk = sorted(local_model_paths)[-1]
 
         print(Fore.BLUE + f"\nLoad latest model from disk..." + Style.RESET_ALL)
 

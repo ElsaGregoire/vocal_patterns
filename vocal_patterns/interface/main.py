@@ -81,7 +81,7 @@ def predict(X_pred_processed: np.ndarray):
         raise ValueError("No data to predict on!")
 
     # model = load_model()
-    model = models.load_model("/prod/mlops/training_outputs/models/20231121-160757.h5")
+    model = models.load_model("/prod/mlops/training_outputs/models/20231201-142914.h5")
     assert model is not None
 
     y_pred = model.predict(X_pred_processed)[0]
