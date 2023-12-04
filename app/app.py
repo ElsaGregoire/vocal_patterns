@@ -45,50 +45,98 @@ def get_prediction(float_audio_array_as_list):
     return response
 
 
+
 def show_response(resp):
     prediction = resp["response"]["prediction"]
     confidence = round(resp["response"]["confidence"])
 
-    return f"# {prediction}: ({confidence}%)"
+    return f"# {prediction} ({confidence}%)"
 
 
 def response_display(float_audio_array):
     # float_audio_array = reduce_noise(float_audio_array, sample_rate)
     st.audio(float_audio_array, format="audio/wav", sample_rate=sample_rate)
+    progress_text = "Generating Spectogram. Please wait."
+    my_bar = st.progress(0, text=progress_text)
+
+    for percent_complete in range(100):
+        time.sleep(0.01)
+        my_bar.progress(percent_complete + 1, text=progress_text)
+    time.sleep(1)
+    my_bar.empty()
+
     st.success("Audio recognized successfully! ✅")
 
     display_spectrogram(float_audio_array)
 
-    st.write("### Your recording result is ⬇️")
+    st.write("### Your recording result is 🥁")
     float_audio_array_as_list = float_audio_array.tolist()
     resp = get_prediction(float_audio_array_as_list).json()
     st.write(show_response(resp))
 
 
+
 st.set_page_config(
     page_title="Voxalyze",
     page_icon="🎙️",
-    initial_sidebar_state="auto",
+    initial_sidebar_state="collapsed",
 )
+
+col1, col2, col3 = st.columns([3,5,3])
+
+with col1:
+    st.write()
+
+with col2:
+    st.image("voxalyze.png", width= 300)
+    st.write("[![Stars](https://img.shields.io/github/stars/ElsaGregoire/vocal_patterns.svg?logo=github&style=social)](https://github.com/ElsaGregoire/vocal_patterns)")
+
+
+with col3:
+    st.write("")
+
 
 
 st.sidebar.image("voxalyze.png", use_column_width=True)
 
-# voxlyze_base_uri = "http://localhost:8000/"
-voxlyze_base_uri = "https://vocalpatterns-mqofeud75a-ew.a.run.app/"
+voxlyze_base_uri = "http://localhost:8000/"
+#voxlyze_base_uri = "https://vocalpatterns-mqofeud75a-ew.a.run.app/"
 voxlyze_predict_uri = voxlyze_base_uri + "predict"
 
 
-st.title("Voxalyze")
+col1, col2, col3 = st.columns([3,2,3])
 
-st.write("""🎈🎈🎈 Welcome to our Vocal Pattern App 🎈🎈🎈""")
+with col1:
+    st.write()
+
+with col2:
+    st.title("Voxalyze")
+
+
+with col3:
+    st.write("")
+
+col1, col2, col3 = st.columns([0.2,0.85,0.2])
+
+with col1:
+    st.write()
+
+with col2:
+    st.write(" ### 🎈 **Welcome to our Vocal Pattern App** 🎈 ")
+
+
+with col3:
+    st.write("")
+
+
 
 st.write(
     """Here you can record a sound 🎙️ or upload a sound file 🎵 between 4 and 6 seconds.
          Our app will show you the *spectogram* 📊 of the sound and will classify the sound as an **Arpegio**,
-         a **Scale** or **Other type** of sound (as *melodies*, *long notes*, a funk and beautiful *improvisation* 🕺🏾, .."""
+         a **Scale** or **Other type** of sound (as *melodies*, *long notes*, a funk and beautiful *improvisation* 🕺🏾 ..."""
     ""
 )
+
 
 st.subheader(
     "Please, select one of the options below", divider="red"
@@ -102,31 +150,44 @@ st.subheader(
 
 st.set_option("deprecation.showPyplotGlobalUse", False)
 
-options = st.radio("Select an option", ("record", "upload"))
+options = st.radio("What do you want to do? ", ("Record  🎙️", "Upload a file 🎵"),
+                   captions= ['Warm up and sing your best arpeggios and scales', 'Share your beautiful recorded voice files'])
 
-if options == "record":
+if options == "Record  🎙️":
     # First title
-    st.markdown("### Record your audio here ⬇️")
+    st.markdown("### Record your audio here  ⬇️",
+                help="""Press the microphone icon to stat recordig.
+                When the icon turns green means it is recording.
+                To stop it, press it again.
+                It will automatically stop if your record is too long.""")
 
-    # Audio recorder
-    audio_bytes = audio_recorder(
+    col1, col2, col3 = st.columns([5,3,5])
+
+    with col1:
+        st.write()
+    with col2:
+        audio_bytes = audio_recorder(
         pause_threshold=6.0,
         text="",
         recording_color="#6aa36f",
         neutral_color="565656",
         icon_name="microphone",
-        icon_size="6x",
-        sample_rate=sample_rate,
+        icon_size="8x",
+        sample_rate=sample_rate
     )
+    with col3:
+        st.write('')
 
+
+    # Audio recorder
     if audio_bytes is None:
         st.info("Please record a sound")
     else:
-        st.spinner("Generating the spectrogram...")
         audio_array = np.frombuffer(audio_bytes, dtype=np.int32)
         float_audio_array = audio_array.astype(float)
         response_display(float_audio_array)
         st.stop()
+
 
 else:
     st.markdown("### Upload your audio file here ⬇️")
