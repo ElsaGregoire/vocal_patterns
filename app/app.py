@@ -1,6 +1,5 @@
 import streamlit as st
 import numpy as np
-import time
 from io import BytesIO
 import matplotlib.pyplot as plt
 from audio_recorder_streamlit import audio_recorder
@@ -10,6 +9,18 @@ import soundfile as sf
 
 import librosa
 import librosa.display
+
+from vocal_patterns.params import DEPLOYMENT
+
+
+sample_rate = 22050
+
+voxlyze_base_uri = (
+    "http://localhost:8000/"
+    if DEPLOYMENT == "local"
+    else "https://vocalpatterns-mqofeud75a-ew.a.run.app/"
+)
+voxlyze_predict_uri = voxlyze_base_uri + "predict"
 
 
 def reduce_noise(float_audio_array, sample_rate):
@@ -53,7 +64,7 @@ def show_response(resp):
 def response_display(float_audio_array):
     # float_audio_array = reduce_noise(float_audio_array, sample_rate)
     st.audio(float_audio_array, format="audio/wav", sample_rate=sample_rate)
-    st.success("Audio recognized successfully!✅")
+    st.success("Audio recognized successfully! ✅")
 
     display_spectrogram(float_audio_array)
 
@@ -72,12 +83,6 @@ st.set_page_config(
 
 st.sidebar.image("voxalyze.png", use_column_width=True)
 
-# voxlyze_base_uri = "http://localhost:8000/"
-voxlyze_base_uri = "https://vocalpatterns-mqofeud75a-ew.a.run.app/"
-voxlyze_predict_uri = voxlyze_base_uri + "predict"
-sample_rate = 22050
-
-
 st.title("Voxalyze")
 
 st.write("""🎈🎈🎈 Welcome to our Vocal Pattern App 🎈🎈🎈""")
@@ -89,10 +94,7 @@ st.write(
     ""
 )
 
-st.subheader(
-    "Please, select one of the options below", divider="red"
-)  # Adding a divider
-
+st.subheader("Please, select one of the options below")  # Adding a divider
 
 # add_selectbox = st.sidebar.radio(
 #     "Where would you like to go?",
@@ -115,15 +117,15 @@ if options == "record":
         neutral_color="565656",
         icon_name="microphone",
         icon_size="6x",
+        sample_rate=sample_rate,
     )
 
     if audio_bytes is None:
         st.info("Please record a sound")
     else:
         st.spinner("Generating the spectrogram...")
-        audio_array = np.frombuffer(audio_bytes, dtype=np.int16)
+        audio_array = np.frombuffer(audio_bytes, dtype=np.int32)
         float_audio_array = audio_array.astype(float)
-        print("###recorded####", float_audio_array.shape)
         response_display(float_audio_array)
         st.stop()
 
