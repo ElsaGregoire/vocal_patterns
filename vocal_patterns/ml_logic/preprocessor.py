@@ -55,6 +55,11 @@ def stretch_waveforms(waveform, sr, target_duration=4.0):
         return waveform
 
 
+def noise_up_waveform(waveform, noise_level=0.001):
+    np.random.normal(size=len(waveform))
+    return waveform + (noise_level * np.random.normal(size=len(waveform)))
+
+
 def preprocess_df(
     data: pd.DataFrame, augmentations: list | None = None, clearCashed: bool = False
 ):
@@ -98,6 +103,7 @@ def preprocess_df(
 
 
 def preprocess_predict(waveform: np.ndarray):
+    waveform = noise_up_waveform(waveform, noise_level=0.001)
     spectrograms = []
     stretched_waveform = stretch_waveforms(
         waveform, sr=sample_rate, target_duration=4.0
