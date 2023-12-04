@@ -11,8 +11,6 @@ import soundfile as sf
 import librosa
 import librosa.display
 
-from vocal_patterns.params import DEPLOYMENT
-
 
 sample_rate = 22050
 
