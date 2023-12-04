@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import numpy as np
 from io import BytesIO
@@ -17,7 +18,7 @@ sample_rate = 22050
 
 voxlyze_base_uri = (
     "http://localhost:8000/"
-    if DEPLOYMENT == "local"
+    if os.environ["DEPLOYMENT"] == "local"
     else "https://vocalpatterns-mqofeud75a-ew.a.run.app/"
 )
 voxlyze_predict_uri = voxlyze_base_uri + "predict"
