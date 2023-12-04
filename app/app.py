@@ -82,19 +82,15 @@ def response_display(float_audio_array):
 st.set_page_config(
     page_title="Voxalyze",
     page_icon="🎙️",
-    initial_sidebar_state="collapsed",
+    initial_sidebar_state="collapsed"
 )
 
 col1, col2, col3 = st.columns([3,5,3])
-
 with col1:
     st.write()
-
 with col2:
     st.image("voxalyze.png", width= 300)
     st.write("[![Stars](https://img.shields.io/github/stars/ElsaGregoire/vocal_patterns.svg?logo=github&style=social)](https://github.com/ElsaGregoire/vocal_patterns)")
-
-
 with col3:
     st.write("")
 
@@ -127,7 +123,7 @@ with col3:
 
 st.write(
     """Here you can record a sound 🎙️ or upload a sound file 🎵 between 4 and 6 seconds.
-         Our app will show you the *spectrogram* 📊 of the sound and will classify the sound as an **Arpegio**,
+         Our app will show you the *spectrogram* 📊 of the sound and will classify the sound as an **Arpeggio**,
          a **Scale** or **Other type** of sound (as *melodies*, *long notes*, a funk and beautiful *improvisation* 🕺🏾 ...)"""
     ""
 )
@@ -156,10 +152,7 @@ if options == "Record  🎙️":
                 To stop it, press it again.
                 It will automatically stop if your record is too long.""")
 
-
-
     col1, col2, col3 = st.columns([5,3,5])
-
     with col1:
         st.write()
     with col2:
@@ -170,10 +163,10 @@ if options == "Record  🎙️":
         neutral_color="565656",
         icon_name="microphone",
         icon_size="8x",
-        sample_rate=sample_rate
-    )
+        sample_rate=sample_rate)
     with col3:
         button = st.button('Try again', type='primary', use_container_width=True)
+
     # Audio recorder
     if audio_bytes is None:
         st.info("Please record a sound")
@@ -184,7 +177,6 @@ if options == "Record  🎙️":
             st.download_button('Dowload your recording', data=audio_bytes, use_container_width=True)
             response_display(float_audio_array)
             st.stop()
-
         else:
             if button:
                 st.info("Please record a new sound")
@@ -192,15 +184,18 @@ if options == "Record  🎙️":
 
 else:
     st.markdown("### Upload your audio file here ⬇️")
-    uploaded_file1 = st.file_uploader("Pick a wave file!", type="wav", key="sample1")
+    uploaded_file1 = st.file_uploader("Pick a wave file!", type="wav", key="sample1", help= 'Upload your wave audio file. It should last between 4 and 6 seconds.')
 
     if uploaded_file1 is None:
         st.info("Please upload a wave file.")
         st.stop()
 
     if uploaded_file1 is not None:
-        st.spinner("Checking the audio...")
-        float_audio_array, sr = librosa.load(
-            BytesIO(uploaded_file1.read()), sr=sample_rate
-        )
-        response_display(float_audio_array)
+        if st.button('Upload a new file', use_container_width=True, type='primary') == False:
+            st.spinner("Checking the audio...")
+            float_audio_array, sr = librosa.load(
+                BytesIO(uploaded_file1.read()), sr=sample_rate
+            )
+            response_display(float_audio_array)
+        else:
+            st.info("Please upload a new wave file")
