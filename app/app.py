@@ -42,9 +42,11 @@ def get_prediction(float_audio_array_as_list):
         voxlyze_predict_uri,
         json={"float_audio_array_as_list": float_audio_array_as_list},
     )
+    if response >= 70:
+        st.balloons()
+    else:
+        st.snow()
     return response
-
-
 
 def show_response(resp):
     prediction = resp["response"]["prediction"]
@@ -56,7 +58,7 @@ def show_response(resp):
 def response_display(float_audio_array):
     # float_audio_array = reduce_noise(float_audio_array, sample_rate)
     st.audio(float_audio_array, format="audio/wav", sample_rate=sample_rate)
-    progress_text = "Generating Spectogram. Please wait."
+    progress_text = "Generating Spectrogram. Please wait."
     my_bar = st.progress(0, text=progress_text)
 
     for percent_complete in range(100):
@@ -69,11 +71,11 @@ def response_display(float_audio_array):
 
     display_spectrogram(float_audio_array)
 
+
     st.write("### Your recording result is 🥁")
     float_audio_array_as_list = float_audio_array.tolist()
     resp = get_prediction(float_audio_array_as_list).json()
     st.write(show_response(resp))
-
 
 
 st.set_page_config(
@@ -105,26 +107,18 @@ voxlyze_predict_uri = voxlyze_base_uri + "predict"
 
 
 col1, col2, col3 = st.columns([3,2,3])
-
 with col1:
     st.write()
-
 with col2:
     st.title("Voxalyze")
-
-
 with col3:
     st.write("")
 
 col1, col2, col3 = st.columns([0.2,0.85,0.2])
-
 with col1:
     st.write()
-
 with col2:
     st.write(" ### 🎈 **Welcome to our Vocal Pattern App** 🎈 ")
-
-
 with col3:
     st.write("")
 
@@ -132,8 +126,8 @@ with col3:
 
 st.write(
     """Here you can record a sound 🎙️ or upload a sound file 🎵 between 4 and 6 seconds.
-         Our app will show you the *spectogram* 📊 of the sound and will classify the sound as an **Arpegio**,
-         a **Scale** or **Other type** of sound (as *melodies*, *long notes*, a funk and beautiful *improvisation* 🕺🏾 ..."""
+         Our app will show you the *spectrogram* 📊 of the sound and will classify the sound as an **Arpegio**,
+         a **Scale** or **Other type** of sound (as *melodies*, *long notes*, a funk and beautiful *improvisation* 🕺🏾 ...)"""
     ""
 )
 
@@ -161,6 +155,8 @@ if options == "Record  🎙️":
                 To stop it, press it again.
                 It will automatically stop if your record is too long.""")
 
+
+
     col1, col2, col3 = st.columns([5,3,5])
 
     with col1:
@@ -176,17 +172,21 @@ if options == "Record  🎙️":
         sample_rate=sample_rate
     )
     with col3:
-        st.write('')
-
-
+        button = st.button('Try again', type='primary', use_container_width=True)
     # Audio recorder
     if audio_bytes is None:
         st.info("Please record a sound")
     else:
-        audio_array = np.frombuffer(audio_bytes, dtype=np.int32)
-        float_audio_array = audio_array.astype(float)
-        response_display(float_audio_array)
-        st.stop()
+        if button == False:
+            audio_array = np.frombuffer(audio_bytes, dtype=np.int32)
+            float_audio_array = audio_array.astype(float)
+            st.download_button('Dowload your recording', data=audio_bytes, use_container_width=True)
+            response_display(float_audio_array)
+            st.stop()
+
+        else:
+            if button:
+                st.info("Please record a new sound")
 
 
 else:
