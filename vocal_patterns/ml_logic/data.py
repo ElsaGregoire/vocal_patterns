@@ -1,21 +1,21 @@
 import os
 import pandas as pd
 
-# from vocal_patterns.params import DATA_TARGET
+from vocal_patterns.params import DATA_TARGET
 
 
 def get_data(test: bool = False) -> pd.DataFrame:
-    # if DATA_TARGET == "local":
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    up_two_parents = os.path.dirname(os.path.dirname(script_dir))
-    base_path = os.path.dirname(up_two_parents)
-    data_file_path = os.path.join(up_two_parents, "data")
-    selected_file = "raw_data_test.csv" if test else "raw_data_train.csv"
-    csv_path = os.path.join(data_file_path, selected_file)
-    data = pd.read_csv(csv_path)
+    if DATA_TARGET == "local":
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        up_two_parents = os.path.dirname(os.path.dirname(script_dir))
+        base_path = os.path.dirname(up_two_parents)
+        data_file_path = os.path.join(up_two_parents, "data")
+        selected_file = "raw_data_test.csv" if test else "raw_data_train.csv"
+        csv_path = os.path.join(data_file_path, selected_file)
+        data = pd.read_csv(csv_path)
 
-    # Apply the base path to the relative path in the CSV
-    data["path"] = data["path"].apply(lambda x: os.path.join(base_path, x))
+        # Apply the base path to the relative path in the CSV
+        data["path"] = data["path"].apply(lambda x: os.path.join(base_path, x))
 
     # if DATA_TARGET == "mlflow":
     # pass
