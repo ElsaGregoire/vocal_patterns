@@ -42,17 +42,18 @@ def get_prediction(float_audio_array_as_list):
         voxlyze_predict_uri,
         json={"float_audio_array_as_list": float_audio_array_as_list},
     )
-    if response >= 70:
-        st.balloons()
-    else:
-        st.snow()
+
     return response
 
 def show_response(resp):
     prediction = resp["response"]["prediction"]
     confidence = round(resp["response"]["confidence"])
-
-    return f"# {prediction} ({confidence}%)"
+    result = (f"# {prediction} ({confidence}%)")
+    if confidence >= 70:
+        st.balloons()
+    else:
+        st.snow()
+    return result
 
 
 def response_display(float_audio_array):
