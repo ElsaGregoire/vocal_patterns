@@ -11,10 +11,8 @@ import soundfile as sf
 import librosa
 import librosa.display
 
-from vocal_patterns.params import DEPLOYMENT
 
-
-sample_rate = 22050
+sample_rate = os.environ["SAMPLE_RATE"]
 
 voxlyze_base_uri = (
     "http://localhost:8000/"
@@ -33,14 +31,13 @@ def reduce_noise(float_audio_array, sample_rate):
     )
 
 
-def display_spectrogram(audio):
-    sr = 44100  # You need to define the sampling rate for audio_bytes
+def display_spectrogram(audio):  # You need to define the sampling rate for audio_bytes
     plt.figure(figsize=(10, 4))
     librosa.display.specshow(
         librosa.amplitude_to_db(np.abs(librosa.stft(audio)), ref=np.max),
         y_axis="log",
         x_axis="time",
-        sr=sr,
+        sr=sample_rate,
     )
     plt.colorbar(format="%+2.0f dB")
     plt.title("Spectrogram")
