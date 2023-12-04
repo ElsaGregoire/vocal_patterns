@@ -12,7 +12,9 @@ streamlit
 requests
 audio-recorder-streamlit
 matplotlib
-tensorflow
+tensorflow-macos==2.10.0; sys_platform == 'darwin' and 'ARM' in platform_version # Mac M-chips
+tensorflow==2.10.0; sys_platform == 'darwin' and 'ARM' not in platform_version # Mac Intel chips
+tensorflow==2.10.0; sys_platform != 'darwin' # Windows & Ubuntu Intel chips
 
 # wav analysis
 librosa
@@ -27,7 +29,7 @@ yapf
 # API
 gcsfs
 google-cloud-storage
-mlflow
+mlflow==2.1.1
 s3fs
 
 # utilities
