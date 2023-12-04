@@ -31,7 +31,7 @@ st.write('''Here you can record a sound 🎙️ or upload a sound file 🎵 betw
          a **Scale** or **Other type** of sound (as *melodies*, *long notes*, a funk and beautiful *improvisation* 🕺🏾, ...)''')
 
 
-st.subheader("What's the difference between an *Arpegio*, a *Scale* or *Other type* of sounds?", divider='red') #Adding a divider
+st.subheader("What's the difference between an *Arpeggio*, a *Scale* or *Other type* of sounds?") #Adding a divider
 
 #Arpegios
 st.write('''An arpeggio is a broken chord, or a chord in which individual
@@ -78,7 +78,7 @@ spectrogram_arpegio = librosa.display.specshow(
     y_axis='log', x_axis='time', sr=sr_arpegio
 )
 plt.colorbar(format='%+2.0f dB')
-plt.title('Spectrogram - Arpegio')
+plt.title('Spectrogram - Arpeggio')
 st.pyplot()
 
 
@@ -99,7 +99,7 @@ spectrogram_scale = librosa.display.specshow(
     y_axis='log', x_axis='time', sr=sr_scale
 )
 plt.colorbar(format='%+2.0f dB')
-plt.title('Spectrogram - Arpegio')
+plt.title('Spectrogram - Scale')
 st.pyplot()
 
 
