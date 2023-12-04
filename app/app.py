@@ -134,8 +134,7 @@ st.write(
 
 
 st.subheader(
-    "Please, select one of the options below", divider="red"
-)  # Adding a divider
+    "Please, select one of the options below")  # Adding a divider
 
 
 # add_selectbox = st.sidebar.radio(
