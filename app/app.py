@@ -144,8 +144,7 @@ st.subheader(
 
 st.set_option("deprecation.showPyplotGlobalUse", False)
 
-options = st.radio("What do you want to do? ", ("Record  🎙️", "Upload a file 🎵"),
-                   captions= ['Warm up and sing your best arpeggios and scales', 'Share your beautiful recorded voice files'])
+options = st.radio("What do you want to do? ", ("Record  🎙️", "Upload a file 🎵"))
 
 if options == "Record  🎙️":
     # First title
