@@ -19,10 +19,7 @@ tensorflow==2.10.0; sys_platform != 'darwin' # Windows & Ubuntu Intel chips
 librosa
 
 # tests/linter
-black
 coverage
-flake8
-pytest
 yapf
 
 # API
