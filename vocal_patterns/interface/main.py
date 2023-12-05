@@ -22,10 +22,10 @@ def train(
     patience=2,
     split_ratio: float = 0.2,
 ) -> float:
-    snippet_duration = 4
+    snippet_duration = 8
     augmentations = {
         "stretch_target_duration": snippet_duration,
-        "snippets": {"duration": snippet_duration, "overlap": 3},
+        "snippets": {"duration": snippet_duration, "overlap": snippet_duration - 1},
         "background_noise": 1,
         # "noise_up": 0.001,
     }
