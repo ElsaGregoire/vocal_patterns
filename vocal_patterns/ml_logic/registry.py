@@ -1,4 +1,5 @@
 import glob
+import json
 import os
 import time
 import pickle
@@ -46,37 +47,27 @@ def save_results(params: dict, metrics: dict) -> None:
     print("✅ Results saved locally")
 
 
-def save_model(model: keras.Model = None) -> None:
+def save_model(model: keras.Model = None, augmentations=None) -> None:
     timestamp = time.strftime("%Y%m%d-%H%M%S")
 
     # Save model locally
     model_path = os.path.join(LOCAL_REGISTRY_PATH, "models", f"{timestamp}.h5")
+    model.augmentations = augmentations
     model.save(model_path)
 
     print("✅ Model saved locally")
 
-    # if MODEL_TARGET == "gcs":
-    #     model_filename = model_path.split("/")[
-    #         -1
-    #     ]  # e.g. "20230208-161047.h5" for instance
-    #     client = storage.Client()
-    #     bucket = client.bucket(BUCKET_NAME)
-    #     blob = bucket.blob(f"models/{model_filename}")
-    #     blob.upload_from_filename(model_path)
-
-    #     print("✅ Model saved to GCS")
-
-    #     return None
-
     if MODEL_TARGET == "mlflow":
         mlflow.tensorflow.log_model(
-            model=model, artifact_path="model", registered_model_name=MLFLOW_MODEL_NAME
+            model=model,
+            artifact_path="model",
+            registered_model_name=MLFLOW_MODEL_NAME,
         )
-
+        with open("augmentations.json", "w") as f:
+            json.dump(augmentations, f)
+        mlflow.log_artifact("augmentations.json")
         print("✅ Model saved to MLflow")
-
         return None
-
     return None
 
 
@@ -165,9 +156,17 @@ def load_model(stage="Production") -> keras.Model:
             return None
 
         model = mlflow.tensorflow.load_model(model_uri=model_uri)
+
+        ### ARTIFACTS
+        run_id = os.path.basename(os.path.dirname(os.path.dirname(model_uri)))
+        local_path = mlflow.artifacts.download_artifacts(
+            run_id=run_id, artifact_path="augmentations.json"
+        )
+        with open(local_path, "r") as f:
+            augmentations = json.load(f)
+        model.augmentations = augmentations
+        ######
         model.timestamp = model_versions[0].last_updated_timestamp
-        model.augmentations = model_versions[0].tags["data_augmentations"]
-        print("augmentations", model.augmentations)
         print("✅ Model loaded from MLflow")
         return model
     else:

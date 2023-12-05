@@ -10,3 +10,5 @@ data/raw_data/
 
 vocal_patterns/working_data
 *.pkl
+
+augmentations.json

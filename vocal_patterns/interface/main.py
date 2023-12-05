@@ -29,7 +29,7 @@ def train(
     }
 
     data = get_data()
-    data = preprocess_df(data, clearCached=True, augmentations=augmentations)
+    data = preprocess_df(data, clearCached=False, augmentations=augmentations)
 
     X = data["spectrogram"]
     y = data[["exercise"]]
@@ -68,7 +68,7 @@ def train(
     )
 
     save_results(params=results_params, metrics=dict(accuracy=accuracy))
-    save_model(model=model)
+    save_model(model=model, augmentations=augmentations)
 
     print(accuracy)
     return model
