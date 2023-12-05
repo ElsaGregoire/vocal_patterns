@@ -21,10 +21,11 @@ def train(
     batch_size=32,
     patience=2,
     split_ratio: float = 0.2,
-    augmentations: list | None = None,
 ) -> float:
+    augmentations = ["background_noise"]
+
     data = get_data()
-    data = preprocess_df(data, clearCashed=False)
+    data = preprocess_df(data, clearCached=False)
 
     X = data["spectrogram"]
     y = data[["exercise"]]

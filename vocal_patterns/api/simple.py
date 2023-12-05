@@ -35,7 +35,7 @@ async def pred(request: Request):
             X_pred_processed=spectrogram_expanded, model=app.state.model
         )
         raw_predictions.append(prediction)
-
+    # print("raw_predictions", raw_predictions)
     # print("raw_predictions_sum", np.mean(raw_predictions, axis=0))
     prediction_map = {
         0: "Arpeggio",
@@ -49,7 +49,11 @@ async def pred(request: Request):
     prediction_str = prediction_map[prediction]
 
     return {
-        "response": {"prediction": str(prediction_str), "confidence": int(confidence)}
+        "response": {
+            "prediction": str(prediction_str),
+            "confidence": int(confidence),
+            "timestamp": app.state.model.timestamp,
+        }
     }
 
 

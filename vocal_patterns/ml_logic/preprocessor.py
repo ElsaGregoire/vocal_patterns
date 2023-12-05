@@ -1,14 +1,17 @@
 import os
+import random
 import librosa
 import librosa.display
 import numpy as np
 import pandas as pd
 
+from vocal_patterns.params import SAMPLE_RATE
 
-sample_rate = 22050
+
+sample_rate = SAMPLE_RATE
 
 
-def scaled_spectrogram(wave_trunc, sr):
+def scaled_spectrogram(wave_trunc, sr=sample_rate):
     mel_spectrogram = librosa.feature.melspectrogram(y=wave_trunc, sr=sr)
     power_to_db = librosa.power_to_db(mel_spectrogram, ref=np.max)
     min_value = np.min(power_to_db)
@@ -18,14 +21,21 @@ def scaled_spectrogram(wave_trunc, sr):
     return np.expand_dims(normalized_spectrogram, axis=-1)
 
 
-def slice_waves(waveform, sr, snippet_duration=4, overlap=3):
+def slice_waves(waveform, sr=sample_rate, snippet_duration=4, overlap=3):
     # Calculate the frame size and hop length
     frame_size = int(snippet_duration * sr)
     hop_length = int((snippet_duration - overlap) * sr)
-
+    print(
+        {
+            "frame_size": frame_size,
+            "hop_length": hop_length,
+            "sr": sr,
+            "waveform": len(waveform),
+        }
+    )
     # Get the total number of snippets
     num_snippets = int(np.floor((len(waveform) - frame_size) / hop_length)) + 1
-
+    print("num_snippets", num_snippets)
     new_4sec_arrays = []
     # Slice the audio into snippets
     for i in range(num_snippets):
@@ -38,7 +48,7 @@ def slice_waves(waveform, sr, snippet_duration=4, overlap=3):
     return new_4sec_arrays
 
 
-def stretch_waveforms(waveform, sr, target_duration=4.0):
+def stretch_waveforms(waveform, sr=sample_rate, target_duration=4.0):
     current_duration = librosa.get_duration(
         y=waveform, sr=sr
     )  # will be put ouo in float seconds
@@ -48,11 +58,11 @@ def stretch_waveforms(waveform, sr, target_duration=4.0):
         # Stretch the audio
         stretched_audio = librosa.effects.time_stretch(waveform, rate=stretch_factor)
         waveform = stretched_audio
-        return waveform
+        return waveform, sr
 
     else:
         # else return the original audio
-        return waveform
+        return waveform, sr
 
 
 def noise_up_waveform(waveform, noise_level=0.001):
@@ -60,8 +70,27 @@ def noise_up_waveform(waveform, noise_level=0.001):
     return waveform + (noise_level * np.random.normal(size=len(waveform)))
 
 
+def add_background_noise(waveform, sr=sample_rate, noise_level=0.8):
+    sample = "/Users/jake/code/jchaselubitz/vocal_patterns/data/raw_data/office-ambience-6322.mp3"
+    background_sample, sr = librosa.load(sample, sr=sr, mono=True)
+    waveform_length = len(waveform)
+    sample_length = len(background_sample)
+    length_difference = sample_length - waveform_length
+    if sample_length > waveform_length:
+        random_sample_with_wf_length = random.randint(20, length_difference)
+        background_sample = background_sample[
+            random_sample_with_wf_length : waveform_length
+            + random_sample_with_wf_length
+        ]
+        mixed_waveform = waveform + noise_level * background_sample
+    else:
+        waveform = waveform[sample_length]
+        mixed_waveform = waveform + noise_level * background_sample
+    return mixed_waveform, sr
+
+
 def preprocess_df(
-    data: pd.DataFrame, augmentations: list | None = None, clearCashed: bool = False
+    data: pd.DataFrame, augmentations: list | None = None, clearCached: bool = False
 ):
     def process_data():
         data_list = []
@@ -69,10 +98,14 @@ def preprocess_df(
             exercise = row["exercise"]
             technique = row["technique"]
             waveform, sr = librosa.load(row["path"], sr=sample_rate)
-
-            stretch_waveforms(waveform, sr, target_duration=4.0)
-
-            slice_waveforms = slice_waves(waveform, sr)
+            waveform, sr = stretch_waveforms(
+                waveform, sr=sample_rate, target_duration=4.0
+            )
+            if "background_noise" in augmentations:
+                waveform, sr = add_background_noise(waveform, sr, noise_level=3)
+            if "noise_up" in augmentations:
+                waveform = noise_up_waveform(waveform, noise_level=0.001)
+            slice_waveforms = slice_waves(waveform, sr=sample_rate)
             for w in slice_waveforms:
                 normalized_spectrogram = scaled_spectrogram(w, sr)
                 data_list.append(
@@ -85,7 +118,7 @@ def preprocess_df(
         set_df = pd.DataFrame(data_list)
         return set_df
 
-    if clearCashed == True:
+    if clearCached == True:
         try:
             os.remove("preproc.pkl")
             print("Removed cached data")
@@ -103,11 +136,12 @@ def preprocess_df(
 
 
 def preprocess_predict(waveform: np.ndarray):
-    waveform = noise_up_waveform(waveform, noise_level=0.001)
+    # waveform = noise_up_waveform(waveform, noise_level=0.001)
     spectrograms = []
-    stretched_waveform = stretch_waveforms(
+    stretched_waveform, sr = stretch_waveforms(
         waveform, sr=sample_rate, target_duration=4.0
     )
+    assert stretched_waveform.shape[0] >= sample_rate * 4
     slice_waveforms = slice_waves(stretched_waveform, sr=sample_rate)
     for waveform in slice_waveforms:
         normalized_spectrogram = scaled_spectrogram(waveform, sr=sample_rate)
