@@ -58,7 +58,14 @@ def show_response(resp):
     confidence = round(resp["response"]["confidence"])
     model_id = resp["response"]["timestamp"]
     augmentations = resp["response"]["augmentations"]
-    result = f"# {prediction} ({confidence}%) \n\n Model ID: {model_id}, Augmentations: {augmentations}"
+
+    result = st.markdown(
+        body=f"""
+        # {prediction} ({confidence}%) \n\n Model ID: {model_id}   
+        **Augmentations:**
+        {augmentations} 
+        """
+    )
     if confidence >= 70:
         st.balloons()
     else:
@@ -83,7 +90,7 @@ def response_display(float_audio_array):
     st.write("### Your recording result is 🥁")
     float_audio_array_as_list = float_audio_array.tolist()
     resp = get_prediction(float_audio_array_as_list).json()
-    st.write(show_response(resp))
+    show_response(resp)
 
 
 st.set_page_config(
