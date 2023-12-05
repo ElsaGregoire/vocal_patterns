@@ -25,7 +25,7 @@ def train(
     augmentations = {
         "snippets": {"duration": 4, "overlap": 3},
         "background_noise": 2,
-        "noise_up": 0.001,
+        # "noise_up": 0.001,
     }
 
     data = get_data()
