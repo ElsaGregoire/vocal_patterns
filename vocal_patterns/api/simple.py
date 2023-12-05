@@ -52,11 +52,16 @@ async def pred(request: Request):
     confidence = np.max(mean_prediction) * 100
     prediction_str = prediction_map[prediction]
 
+    ## SHOW MODEL AGUMENTATIONS
+
+    augmentations = app.state.model.augmentations
+
     return {
         "response": {
             "prediction": str(prediction_str),
             "confidence": int(confidence),
             "timestamp": app.state.model.timestamp,
+            "augmentations": augmentations,
         }
     }
 

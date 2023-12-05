@@ -57,7 +57,8 @@ def show_response(resp):
     prediction = resp["response"]["prediction"]
     confidence = round(resp["response"]["confidence"])
     model_id = resp["response"]["timestamp"]
-    result = f"# {prediction} ({confidence}%) \n\n Model ID: {model_id}"
+    augmentations = resp["response"]["augmentations"]
+    result = f"# {prediction} ({confidence}%) \n\n Model ID: {model_id}, Augmentations: {augmentations}"
     if confidence >= 70:
         st.balloons()
     else:
