@@ -91,7 +91,11 @@ def preprocess_df(
             technique = row["technique"]
             waveform, sr = librosa.load(row["path"], sr=sample_rate)
             waveform, sr = stretch_waveforms(
-                waveform, sr=sample_rate, target_duration=4.0
+                waveform,
+                sr=sample_rate,
+                target_duration=augmentations["stretch_target_duration"]
+                if augmentations is not None
+                else 4.0,
             )
             if "background_noise" in augmentations:
                 waveform, sr = add_background_noise(
