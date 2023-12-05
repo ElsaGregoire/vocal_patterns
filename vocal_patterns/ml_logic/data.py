@@ -23,6 +23,20 @@ def get_data(test: bool = False) -> pd.DataFrame:
     return data
 
 
+def get_manual_test_data() -> pd.DataFrame:
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    up_two_parents = os.path.dirname(os.path.dirname(script_dir))
+    base_path = os.path.dirname(up_two_parents)
+    data_file_path = os.path.join(up_two_parents, "data/manual_test_data")
+    selected_file = "manual_test_data.csv"
+    csv_path = os.path.join(data_file_path, selected_file)
+    data = pd.read_csv(csv_path)
+
+    # Apply the base path to the relative path in the CSV
+    data["path"] = data["path"].apply(lambda x: os.path.join(base_path, x))
+    return data
+
+
 def upload_data_to_gcp(
     gcp_project: str, query: str, csv, data, bucket_name: str, blob_name: str
 ) -> pd.DataFrame:

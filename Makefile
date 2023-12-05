@@ -32,6 +32,8 @@ all: clean install test black check_code
 
 create_csv:
 	@python scripts/tag_creator.py
+create_man_test_csv:
+	@python scripts/test_tag_creator.py
 
 start_api:
 	@uvicorn vocal_patterns.api.simple:app --reload

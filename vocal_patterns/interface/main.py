@@ -11,8 +11,8 @@ from vocal_patterns.ml_logic.model import (
 from vocal_patterns.ml_logic.preprocessor import (
     preprocess_df,
 )
-from vocal_patterns.ml_logic.registry import load_model, save_model, save_results
-from vocal_patterns.ml_logic.registry import mlflow_run, mlflow_transition_model
+from vocal_patterns.ml_logic.registry import save_model, save_results
+from vocal_patterns.ml_logic.registry import mlflow_run
 
 
 @mlflow_run
@@ -31,7 +31,7 @@ def train(
     }
 
     data = get_data()
-    data = preprocess_df(data, clearCached=True, augmentations=augmentations)
+    data = preprocess_df(data, clearCached=False, augmentations=augmentations)
 
     X = data["spectrogram"]
     y = data[["exercise"]]

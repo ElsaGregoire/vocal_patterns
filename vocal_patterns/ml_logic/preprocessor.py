@@ -62,7 +62,10 @@ def noise_up_waveform(waveform, noise_level=0.001):
 
 
 def add_background_noise(waveform, sr=sample_rate, noise_level=0.8):
-    sample = "/Users/jake/code/jchaselubitz/vocal_patterns/data/raw_data/office-ambience-6322.mp3"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    up_two_parents = os.path.dirname(os.path.dirname(script_dir))
+    data_file_path = os.path.join(up_two_parents, "data")
+    sample = os.path.join(data_file_path, "office-ambience-6322.mp3")
     background_sample, sr = librosa.load(sample, sr=sr, mono=True)
     waveform_length = len(waveform)
     sample_length = len(background_sample)
@@ -93,9 +96,7 @@ def preprocess_df(
             waveform, sr = stretch_waveforms(
                 waveform,
                 sr=sample_rate,
-                target_duration=augmentations["stretch_target_duration"]
-                if augmentations is not None
-                else 4.0,
+                target_duration=augmentations["stretch_target_duration"],
             )
             if "background_noise" in augmentations:
                 waveform, sr = add_background_noise(
@@ -153,13 +154,15 @@ def preprocess_df(
 
 
 def preprocess_predict(waveform: np.ndarray, model=None):
-    waveform = noise_up_waveform(waveform, noise_level=0.01)
+    # waveform = noise_up_waveform(waveform, noise_level=0.01)
 
     augmentations = model.augmentations
     slice_params = augmentations["snippets"]
     spectrograms = []
     stretched_waveform, sr = stretch_waveforms(
-        waveform, sr=sample_rate, target_duration=4.0
+        waveform,
+        sr=sample_rate,
+        target_duration=augmentations["stretch_target_duration"],
     )
     assert stretched_waveform.shape[0] >= sample_rate * 4
     slice_waveforms = slice_waves(
