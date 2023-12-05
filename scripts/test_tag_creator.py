@@ -1,8 +1,6 @@
 import os
 import csv
 
-import pandas as pd
-
 # techniques = [
 #     "belt",
 #     "breathy",
@@ -34,7 +32,7 @@ def generate_csv(base_dir, raw_data_folder_path, csv_file_path):
         for dirpath, dirnames, filenames in os.walk(raw_data_folder_path):
             for filename in filenames:
                 if filename.endswith(".wav"):
-                    exercise = next((e for e in exercises if e in filename), "other")
+                    exercise = dirpath.split("/")[-1]
                     full_path = os.path.join(str(dirpath), filename)
                     # Each user will store data in their own file system, so we remove the base_dir from the full path and publish the relative path to the csv
                     relative_path = os.path.relpath(full_path, base_dir)

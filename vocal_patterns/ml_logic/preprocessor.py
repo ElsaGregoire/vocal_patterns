@@ -154,7 +154,7 @@ def preprocess_df(
 
 
 def preprocess_predict(waveform: np.ndarray, model=None):
-    # waveform = noise_up_waveform(waveform, noise_level=0.01)
+    # waveform = noise_up_waveform(waveform, noise_level=1)
 
     augmentations = model.augmentations
     slice_params = augmentations["snippets"]
