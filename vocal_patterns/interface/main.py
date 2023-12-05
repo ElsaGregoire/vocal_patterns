@@ -22,10 +22,10 @@ def train(
     patience=2,
     split_ratio: float = 0.2,
 ) -> float:
-    augmentations = ["background_noise"]
+    augmentations = {"background_noise": 2, "noise_up": 0.001}
 
     data = get_data()
-    data = preprocess_df(data, clearCached=False)
+    data = preprocess_df(data, clearCached=True, augmentations=augmentations)
 
     X = data["spectrogram"]
     y = data[["exercise"]]

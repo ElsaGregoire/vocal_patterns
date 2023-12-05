@@ -25,17 +25,8 @@ def slice_waves(waveform, sr=sample_rate, snippet_duration=4, overlap=3):
     # Calculate the frame size and hop length
     frame_size = int(snippet_duration * sr)
     hop_length = int((snippet_duration - overlap) * sr)
-    print(
-        {
-            "frame_size": frame_size,
-            "hop_length": hop_length,
-            "sr": sr,
-            "waveform": len(waveform),
-        }
-    )
     # Get the total number of snippets
     num_snippets = int(np.floor((len(waveform) - frame_size) / hop_length)) + 1
-    print("num_snippets", num_snippets)
     new_4sec_arrays = []
     # Slice the audio into snippets
     for i in range(num_snippets):
@@ -90,11 +81,12 @@ def add_background_noise(waveform, sr=sample_rate, noise_level=0.8):
 
 
 def preprocess_df(
-    data: pd.DataFrame, augmentations: list | None = None, clearCached: bool = False
+    data: pd.DataFrame, augmentations: dict | None = None, clearCached: bool = False
 ):
     def process_data():
         data_list = []
         for index, row in data.iterrows():
+            print(index, "/", len(data), f"({index/len(data)*100:.2f}%)")
             exercise = row["exercise"]
             technique = row["technique"]
             waveform, sr = librosa.load(row["path"], sr=sample_rate)
@@ -102,9 +94,13 @@ def preprocess_df(
                 waveform, sr=sample_rate, target_duration=4.0
             )
             if "background_noise" in augmentations:
-                waveform, sr = add_background_noise(waveform, sr, noise_level=3)
+                waveform, sr = add_background_noise(
+                    waveform, sr, noise_level=augmentations["background_noise"]
+                )
             if "noise_up" in augmentations:
-                waveform = noise_up_waveform(waveform, noise_level=0.001)
+                waveform = noise_up_waveform(
+                    waveform, noise_level=augmentations["noise_up"]
+                )
             slice_waveforms = slice_waves(waveform, sr=sample_rate)
             for w in slice_waveforms:
                 normalized_spectrogram = scaled_spectrogram(w, sr)
