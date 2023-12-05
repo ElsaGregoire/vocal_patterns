@@ -4,10 +4,12 @@ import numpy as np
 from vocal_patterns.interface.main import predict
 from vocal_patterns.ml_logic.preprocessor import preprocess_predict
 from vocal_patterns.ml_logic.registry import load_model
+from vocal_patterns.params import DEPLOYMENT
 
+stage = "None" if DEPLOYMENT == "local" else "Production"
 
 app = FastAPI()
-app.state.model = load_model()
+app.state.model = load_model(stage=stage)
 
 
 # Define a root `/` endpoint
@@ -27,7 +29,9 @@ async def pred(request: Request):
     data = await request.json()
     float_audio_array_as_list = data["float_audio_array_as_list"]
     float_audio_array = np.array(float_audio_array_as_list)
-    processed_spectrograms = preprocess_predict(float_audio_array)
+    processed_spectrograms = preprocess_predict(
+        float_audio_array, model=app.state.model
+    )
     raw_predictions = []
     for spectrogram in processed_spectrograms:
         spectrogram_expanded = np.expand_dims(spectrogram, axis=0)
@@ -35,7 +39,7 @@ async def pred(request: Request):
             X_pred_processed=spectrogram_expanded, model=app.state.model
         )
         raw_predictions.append(prediction)
-
+    # print("raw_predictions", raw_predictions)
     # print("raw_predictions_sum", np.mean(raw_predictions, axis=0))
     prediction_map = {
         0: "Arpeggio",
@@ -48,8 +52,17 @@ async def pred(request: Request):
     confidence = np.max(mean_prediction) * 100
     prediction_str = prediction_map[prediction]
 
+    ## SHOW MODEL AGUMENTATIONS
+
+    augmentations = app.state.model.augmentations
+
     return {
-        "response": {"prediction": str(prediction_str), "confidence": int(confidence)}
+        "response": {
+            "prediction": str(prediction_str),
+            "confidence": int(confidence),
+            "timestamp": app.state.model.timestamp,
+            "augmentations": augmentations,
+        }
     }
 
 

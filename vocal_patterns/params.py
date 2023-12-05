@@ -1,6 +1,7 @@
 import os
 import numpy as np
 
+SAMPLE_RATE = int(os.environ["SAMPLE_RATE"])
 DEPLOYMENT = os.environ["DEPLOYMENT"]
 GCP_PROJECT = os.environ["GCP_PROJECT"]
 GCP_REGION = os.environ["GCP_REGION"]

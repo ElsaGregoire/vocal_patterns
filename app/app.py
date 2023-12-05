@@ -12,7 +12,7 @@ import librosa
 import librosa.display
 
 
-sample_rate = int(os.environ["SAMPLE_RATE"])
+sample_rate = 22050
 
 voxlyze_base_uri = (
     "http://localhost:8000/"
@@ -56,7 +56,16 @@ def get_prediction(float_audio_array_as_list):
 def show_response(resp):
     prediction = resp["response"]["prediction"]
     confidence = round(resp["response"]["confidence"])
-    result = f"# {prediction} ({confidence}%)"
+    model_id = resp["response"]["timestamp"]
+    augmentations = resp["response"]["augmentations"]
+
+    result = st.markdown(
+        body=f"""
+        # {prediction} ({confidence}%) \n\n Model ID: {model_id}   
+        **Augmentations:**
+        {augmentations} 
+        """
+    )
     if confidence >= 70:
         st.balloons()
     else:
@@ -81,7 +90,7 @@ def response_display(float_audio_array):
     st.write("### Your recording result is 🥁")
     float_audio_array_as_list = float_audio_array.tolist()
     resp = get_prediction(float_audio_array_as_list).json()
-    st.write(show_response(resp))
+    show_response(resp)
 
 
 st.set_page_config(

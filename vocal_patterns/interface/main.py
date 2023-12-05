@@ -21,10 +21,15 @@ def train(
     batch_size=32,
     patience=2,
     split_ratio: float = 0.2,
-    augmentations: list | None = None,
 ) -> float:
+    augmentations = {
+        "snippets": {"duration": 4, "overlap": 3},
+        "background_noise": 2,
+        # "noise_up": 0.001,
+    }
+
     data = get_data()
-    data = preprocess_df(data, clearCashed=False)
+    data = preprocess_df(data, clearCached=False, augmentations=augmentations)
 
     X = data["spectrogram"]
     y = data[["exercise"]]
@@ -63,7 +68,7 @@ def train(
     )
 
     save_results(params=results_params, metrics=dict(accuracy=accuracy))
-    save_model(model=model)
+    save_model(model=model, augmentations=augmentations)
 
     print(accuracy)
     return model
