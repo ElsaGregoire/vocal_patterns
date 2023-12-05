@@ -56,8 +56,8 @@ def autoplay_audio(file_path):
 
 
 
-# Construct the full file path to the audio file in the "Downloads" directory
-downloads_path = "/Users/blancarebollocastellanos/Downloads"
+# Construct the full file path to the audio file in the "sounds" directory
+downloads_path = "/Users/blancarebollocastellanos/code/ElsaGregoire/vocal_patterns/sounds"
 file_name_arpegio = "Arpegio.wav"
 file_path_arpegio = os.path.join(downloads_path, file_name_arpegio)
 file_name_scale = "Scale.wav"
@@ -80,6 +80,7 @@ spectrogram_arpegio = librosa.display.specshow(
 plt.colorbar(format='%+2.0f dB')
 plt.title('Spectrogram - Arpeggio')
 st.pyplot()
+st.set_option('deprecation.showPyplotGlobalUse', False)
 
 
 #Scales
