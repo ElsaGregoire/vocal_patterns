@@ -27,7 +27,9 @@ async def pred(request: Request):
     data = await request.json()
     float_audio_array_as_list = data["float_audio_array_as_list"]
     float_audio_array = np.array(float_audio_array_as_list)
-    processed_spectrograms = preprocess_predict(float_audio_array)
+    processed_spectrograms = preprocess_predict(
+        float_audio_array, model=app.state.model
+    )
     raw_predictions = []
     for spectrogram in processed_spectrograms:
         spectrogram_expanded = np.expand_dims(spectrogram, axis=0)

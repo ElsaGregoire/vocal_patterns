@@ -51,7 +51,6 @@ def save_model(model: keras.Model = None) -> None:
 
     # Save model locally
     model_path = os.path.join(LOCAL_REGISTRY_PATH, "models", f"{timestamp}.h5")
-    model.timestamp = timestamp
     model.save(model_path)
 
     print("✅ Model saved locally")
@@ -98,6 +97,7 @@ def load_model(stage="Production") -> keras.Model:
         )
 
         # Get the latest model version name by the timestamp on disk
+
         local_model_directory = os.path.join(LOCAL_REGISTRY_PATH, "models")
         local_model_paths = glob.glob(f"{local_model_directory}/*")
 
@@ -112,6 +112,12 @@ def load_model(stage="Production") -> keras.Model:
         latest_model.timestamp = most_recent_model_path_on_disk.split("/")[-1].split(
             "."
         )[0]
+        params_path = os.path.join(
+            LOCAL_REGISTRY_PATH, "params", latest_model.timestamp + ".pickle"
+        )
+        with open(params_path, "rb") as file:
+            latest_model.params = pickle.load(file)
+        latest_model.augmentations = latest_model.params["data_augmentations"]
         return latest_model
 
     # elif MODEL_TARGET == "gcs":
@@ -160,6 +166,8 @@ def load_model(stage="Production") -> keras.Model:
 
         model = mlflow.tensorflow.load_model(model_uri=model_uri)
         model.timestamp = model_versions[0].last_updated_timestamp
+        model.augmentations = model_versions[0].tags["data_augmentations"]
+        print("augmentations", model.augmentations)
         print("✅ Model loaded from MLflow")
         return model
     else:

@@ -101,9 +101,26 @@ def preprocess_df(
                 waveform = noise_up_waveform(
                     waveform, noise_level=augmentations["noise_up"]
                 )
-            slice_waveforms = slice_waves(waveform, sr=sample_rate)
-            for w in slice_waveforms:
-                normalized_spectrogram = scaled_spectrogram(w, sr)
+            if "snippets" in augmentations:
+                duration = augmentations["snippets"]["duration"]
+                overlap = augmentations["snippets"]["overlap"]
+                slice_waveforms = slice_waves(
+                    waveform,
+                    sr=sample_rate,
+                    overlap=overlap,
+                    snippet_duration=duration,
+                )
+                for w in slice_waveforms:
+                    normalized_spectrogram = scaled_spectrogram(w, sr)
+                    data_list.append(
+                        {
+                            "spectrogram": normalized_spectrogram,
+                            "exercise": exercise,
+                            "technique": technique,
+                        }
+                    )
+            else:
+                normalized_spectrogram = scaled_spectrogram(waveform, sr)
                 data_list.append(
                     {
                         "spectrogram": normalized_spectrogram,
@@ -131,14 +148,22 @@ def preprocess_df(
     return set_df
 
 
-def preprocess_predict(waveform: np.ndarray):
+def preprocess_predict(waveform: np.ndarray, model=None):
     # waveform = noise_up_waveform(waveform, noise_level=0.001)
+
+    augmentations = model.augmentations
+    slice_params = augmentations["snippets"]
     spectrograms = []
     stretched_waveform, sr = stretch_waveforms(
         waveform, sr=sample_rate, target_duration=4.0
     )
     assert stretched_waveform.shape[0] >= sample_rate * 4
-    slice_waveforms = slice_waves(stretched_waveform, sr=sample_rate)
+    slice_waveforms = slice_waves(
+        stretched_waveform,
+        sr=sample_rate,
+        overlap=slice_params["overlap"],
+        snippet_duration=slice_params["duration"],
+    )
     for waveform in slice_waveforms:
         normalized_spectrogram = scaled_spectrogram(waveform, sr=sample_rate)
         spectrograms.append(normalized_spectrogram)
