@@ -4,7 +4,7 @@ import librosa
 import librosa.display
 import numpy as np
 import pandas as pd
-import noisereduce as nr
+# import noisereduce as nr
 
 from vocal_patterns.params import SAMPLE_RATE
 
@@ -185,6 +185,7 @@ def preprocess_df(
 
 def preprocess_predict(waveform: np.ndarray, model=None):
     # waveform = reduce_noise(waveform)
+    # waveform = noise_up_waveform(waveform, noise_level=0.1)
 
     augmentations = model.augmentations
     spectrograms = []

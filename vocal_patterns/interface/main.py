@@ -22,10 +22,10 @@ def train(
     patience=3,
     split_ratio: float = 0.2,
 ) -> float:
-    snippet_duration = 7
+    snippet_duration = 11
     augmentations = {
         "fmin": 200,
-        "fmax": 2000,
+        "fmax": 2500,
         # "margin_percent": 0,
         "stretch_target_duration": snippet_duration,
         # "snippets": {"duration": snippet_duration, "overlap": snippet_duration - 1},
@@ -34,7 +34,7 @@ def train(
     }
 
     data = get_data()
-    data = preprocess_df(data, clearCached=True, augmentations=augmentations)
+    data = preprocess_df(data, clearCached=False, augmentations=augmentations)
 
     X = data["spectrogram"]
     y = data[["exercise"]]
