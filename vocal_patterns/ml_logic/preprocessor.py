@@ -4,6 +4,7 @@ import librosa
 import librosa.display
 import numpy as np
 import pandas as pd
+import noisereduce as nr
 
 from vocal_patterns.params import SAMPLE_RATE
 
@@ -11,8 +12,10 @@ from vocal_patterns.params import SAMPLE_RATE
 sample_rate = SAMPLE_RATE
 
 
-def scaled_spectrogram(wave_trunc, sr=sample_rate):
-    mel_spectrogram = librosa.feature.melspectrogram(y=wave_trunc, sr=sr)
+def scaled_spectrogram(wave_trunc, sr=sample_rate, fmin=400, fmax=1500):
+    mel_spectrogram = librosa.feature.melspectrogram(
+        y=wave_trunc, sr=sr, fmin=fmin, fmax=fmax
+    )
     power_to_db = librosa.power_to_db(mel_spectrogram, ref=np.max)
     min_value = np.min(power_to_db)
     max_value = np.max(power_to_db)
@@ -44,21 +47,38 @@ def stretch_waveforms(waveform, sr=sample_rate, target_duration=4.0):
         y=waveform, sr=sr
     )  # will be put ouo in float seconds
 
-    if current_duration < target_duration:
-        stretch_factor = current_duration / target_duration
-        # Stretch the audio
-        stretched_audio = librosa.effects.time_stretch(waveform, rate=stretch_factor)
-        waveform = stretched_audio
-        return waveform, sr
+    # if current_duration < target_duration:
+    stretch_factor = current_duration / target_duration
+    # Stretch the audio
+    stretched_audio = librosa.effects.time_stretch(waveform, rate=stretch_factor)
+    waveform = stretched_audio
+    return waveform, sr
 
-    else:
-        # else return the original audio
-        return waveform, sr
+    # else:
+    #     # else return the original audio
+    #     return waveform, sr
 
 
 def noise_up_waveform(waveform, noise_level=0.001):
     np.random.normal(size=len(waveform))
     return waveform + (noise_level * np.random.normal(size=len(waveform)))
+
+
+def reduce_noise(waveform):
+    waveform = nr.reduce_noise(
+        y=waveform,
+        sr=sample_rate,
+        n_std_thresh_stationary=0.5,
+        stationary=True,
+    )
+    return waveform
+
+
+def clip_margins(waveform, margin_percent=15):
+    margin_decimal = margin_percent / 100
+    margin = int(margin_decimal * len(waveform))
+    end = -margin
+    return waveform[margin:end]
 
 
 def add_background_noise(waveform, sr=sample_rate, noise_level=0.8):
@@ -92,7 +112,13 @@ def preprocess_df(
             print(index, "/", len(data), f"({index/len(data)*100:.2f}%)")
             exercise = row["exercise"]
             technique = row["technique"]
+            fmin = augmentations["fmin"]
+            fmax = augmentations["fmax"]
             waveform, sr = librosa.load(row["path"], sr=sample_rate)
+            if "clip_margins" in augmentations:
+                waveform = clip_margins(
+                    waveform, margin_percent=augmentations["margin_percent"]
+                )
             waveform, sr = stretch_waveforms(
                 waveform,
                 sr=sample_rate,
@@ -116,7 +142,9 @@ def preprocess_df(
                     snippet_duration=duration,
                 )
                 for w in slice_waveforms:
-                    normalized_spectrogram = scaled_spectrogram(w, sr)
+                    normalized_spectrogram = scaled_spectrogram(
+                        w, sr, fmin=fmin, fmax=fmax
+                    )
                     data_list.append(
                         {
                             "spectrogram": normalized_spectrogram,
@@ -125,7 +153,9 @@ def preprocess_df(
                         }
                     )
             else:
-                normalized_spectrogram = scaled_spectrogram(waveform, sr)
+                normalized_spectrogram = scaled_spectrogram(
+                    waveform, sr, fmin=fmin, fmax=fmax
+                )
                 data_list.append(
                     {
                         "spectrogram": normalized_spectrogram,
@@ -154,25 +184,40 @@ def preprocess_df(
 
 
 def preprocess_predict(waveform: np.ndarray, model=None):
-    # waveform = noise_up_waveform(waveform, noise_level=1)
+    # waveform = reduce_noise(waveform)
 
     augmentations = model.augmentations
-    slice_params = augmentations["snippets"]
     spectrograms = []
+    if "clip_margins" in augmentations:
+        waveform = clip_margins(
+            waveform, margin_percent=augmentations["margin_percent"]
+        )
     stretched_waveform, sr = stretch_waveforms(
         waveform,
         sr=sample_rate,
         target_duration=augmentations["stretch_target_duration"],
     )
-    assert stretched_waveform.shape[0] >= sample_rate * 4
-    slice_waveforms = slice_waves(
-        stretched_waveform,
-        sr=sample_rate,
-        overlap=slice_params["overlap"],
-        snippet_duration=slice_params["duration"],
+    assert (
+        stretched_waveform.shape[0]
+        >= sample_rate * augmentations["stretch_target_duration"]
     )
+    try:
+        assert augmentations["snippets"] is not None
+        slice_params = augmentations["snippets"]
+        slice_waveforms = slice_waves(
+            stretched_waveform,
+            sr=sample_rate,
+            overlap=slice_params["overlap"],
+            snippet_duration=slice_params["duration"],
+        )
+    except:  # if no snippets augmentation
+        slice_waveforms = [stretched_waveform]
     for waveform in slice_waveforms:
-        normalized_spectrogram = scaled_spectrogram(waveform, sr=sample_rate)
+        fmin = augmentations["fmin"]
+        fmax = augmentations["fmax"]
+        normalized_spectrogram = scaled_spectrogram(
+            waveform, sr=sample_rate, fmin=fmin, fmax=fmax
+        )
         spectrograms.append(normalized_spectrogram)
 
     return spectrograms

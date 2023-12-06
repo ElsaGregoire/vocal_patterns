@@ -142,7 +142,7 @@ def load_model(stage="Production") -> keras.Model:
             augmentations = json.load(f)
         model.augmentations = augmentations
         ######
-        model.timestamp = model_versions[0].last_updated_timestamp
+        model.timestamp = len(model_versions)
         print("✅ Model loaded from MLflow")
         return model
     else:

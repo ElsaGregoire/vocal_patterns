@@ -67,7 +67,6 @@ def fit_model(
     y: np.ndarray,
     batch_size=32,
     patience=2,
-    # validation_data=None,  # overrides validation_split
     validation_split=0.2,
 ) -> Tuple[Model, dict]:
     es = EarlyStopping(
@@ -77,7 +76,6 @@ def fit_model(
     history = model.fit(
         X,
         y,
-        # validation_data=validation_data,
         validation_split=validation_split,
         epochs=20,
         batch_size=batch_size,

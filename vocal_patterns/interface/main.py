@@ -18,20 +18,33 @@ from vocal_patterns.ml_logic.registry import mlflow_run
 @mlflow_run
 def train(
     learning_rate=0.001,
-    batch_size=32,
-    patience=2,
+    batch_size=16,
+    patience=3,
     split_ratio: float = 0.2,
 ) -> float:
-    snippet_duration = 5
+    snippet_duration = 10
     augmentations = {
+        "fmin": 100,
+        "fmax": 2500,
+        # "margin_percent": 0,
         "stretch_target_duration": snippet_duration,
-        "snippets": {"duration": snippet_duration, "overlap": snippet_duration - 1},
+        # "snippets": {"duration": snippet_duration, "overlap": snippet_duration - 1},
         # "background_noise": 1,
         # "noise_up": 0.001,
     }
 
     data = get_data()
     data = preprocess_df(data, clearCached=True, augmentations=augmentations)
+    # sample_rate = 22050
+
+    data_scales_avg_length = (
+        data[data["exercise"] == "scales"]["spectrogram"].apply(len).mean() / 22050
+    )
+    data_arpeggios_avg_length = (
+        data[data["exercise"] == "arpeggios"]["spectrogram"].apply(len).mean() / 22050
+    )
+    print("data_scales_avg_length", data_scales_avg_length)
+    print("data_arpeggios_avg_length", data_arpeggios_avg_length)
 
     X = data["spectrogram"]
     y = data[["exercise"]]
@@ -65,6 +78,7 @@ def train(
         learning_rate=learning_rate,
         data_split=split_ratio,
         data_augmentations=augmentations,
+        accuracy=accuracy,
         loss=loss,
         row_count=len(X_train_array),
     )

@@ -32,6 +32,8 @@ def run_prediction(spectrograms, model):
 
 def recording_test(data, model):
     results = []
+    results_scale = []
+    results_arpeggio = []
     results_key = []
     for index, row in data.iterrows():
         orig_waveform, sr = librosa.load(row["path"], sr=22050)
@@ -43,10 +45,25 @@ def recording_test(data, model):
 
         reality = "Scale" if "scale" in filename.lower() else "Arpeggio"
         correct = reality == prediction_str
+        if reality == "Scale":
+            correct_scale = reality == prediction_str
+            results_scale.append(correct_scale)
+        if reality == "Arpeggio":
+            correct_arpeggio = reality == prediction_str
+            results_arpeggio.append(correct_arpeggio)
 
         results.append(correct)
-        results_key.append({reality, correct, confidence})
+
+        results_key.append(
+            {
+                "is": reality,
+                "rslt": f"{correct} ({round(confidence)}%)",
+                "name": filename,
+            }
+        )
         # Audio(orig_waveform, rate=sr)
 
     print("Accuracy:", np.mean(results) * 100, "%")
+    print("Scale Accuracy:", np.mean(results_scale) * 100, "%")
+    print("Arpeggio Accuracy:", np.mean(results_arpeggio) * 100, "%")
     return results_key
