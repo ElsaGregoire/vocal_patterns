@@ -22,10 +22,10 @@ def train(
     patience=3,
     split_ratio: float = 0.2,
 ) -> float:
-    snippet_duration = 10
+    snippet_duration = 7
     augmentations = {
-        "fmin": 100,
-        "fmax": 2500,
+        "fmin": 200,
+        "fmax": 2000,
         # "margin_percent": 0,
         "stretch_target_duration": snippet_duration,
         # "snippets": {"duration": snippet_duration, "overlap": snippet_duration - 1},
@@ -35,16 +35,6 @@ def train(
 
     data = get_data()
     data = preprocess_df(data, clearCached=True, augmentations=augmentations)
-    # sample_rate = 22050
-
-    data_scales_avg_length = (
-        data[data["exercise"] == "scales"]["spectrogram"].apply(len).mean() / 22050
-    )
-    data_arpeggios_avg_length = (
-        data[data["exercise"] == "arpeggios"]["spectrogram"].apply(len).mean() / 22050
-    )
-    print("data_scales_avg_length", data_scales_avg_length)
-    print("data_arpeggios_avg_length", data_arpeggios_avg_length)
 
     X = data["spectrogram"]
     y = data[["exercise"]]
