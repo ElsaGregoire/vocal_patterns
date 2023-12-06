@@ -57,7 +57,7 @@ def recording_test(data, model):
         results_key.append(
             {
                 "is": reality,
-                "rslt": f"{correct} ({round(confidence)}%)",
+                "rslt": f"{prediction_str} ({round(confidence)}%)",
                 "name": filename,
             }
         )
