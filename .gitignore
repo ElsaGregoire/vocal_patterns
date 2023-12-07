@@ -4,6 +4,7 @@
 .DS_Store
 data/raw_data/
 data/manual_test_data/
+data/man_test_2/
 
 **/__pycache__/
 .env

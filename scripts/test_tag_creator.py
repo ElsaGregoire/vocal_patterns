@@ -40,8 +40,8 @@ def generate_csv(base_dir, raw_data_folder_path, csv_file_path):
 
 
 def generate(data_folder_path, base_dir):
-    raw_data_folder_path = os.path.join(data_folder_path, "manual_test_data")
-    csv_path = os.path.join(raw_data_folder_path, "manual_test_data.csv")
+    raw_data_folder_path = os.path.join(data_folder_path, "man_test_2")
+    csv_path = os.path.join(raw_data_folder_path, "man_test_2.csv")
 
     generate_csv(base_dir, raw_data_folder_path, csv_path)
 

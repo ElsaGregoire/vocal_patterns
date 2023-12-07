@@ -27,8 +27,8 @@ def get_manual_test_data() -> pd.DataFrame:
     script_dir = os.path.dirname(os.path.abspath(__file__))
     up_two_parents = os.path.dirname(os.path.dirname(script_dir))
     base_path = os.path.dirname(up_two_parents)
-    data_file_path = os.path.join(up_two_parents, "data/manual_test_data")
-    selected_file = "manual_test_data.csv"
+    data_file_path = os.path.join(up_two_parents, "data/man_test_2")
+    selected_file = "man_test_2.csv"
     csv_path = os.path.join(data_file_path, selected_file)
     data = pd.read_csv(csv_path)
 

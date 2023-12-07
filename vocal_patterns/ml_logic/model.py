@@ -24,7 +24,7 @@ def init_model(input_shape: Tuple) -> Model:
     model.add(layers.BatchNormalization())
 
     model.add(
-        layers.Conv2D(16, (3, 3), strides=(2, 2), padding="same", activation="relu")
+        layers.Conv2D(16, (2, 2), strides=(2, 2), padding="same", activation="relu")
     )
     model.add(layers.BatchNormalization())
 
@@ -34,9 +34,15 @@ def init_model(input_shape: Tuple) -> Model:
     model.add(layers.BatchNormalization())
 
     model.add(
-        layers.Conv2D(64, (3, 3), strides=(2, 2), padding="same", activation="relu")
+        layers.Conv2D(64, (3, 3), strides=(1, 1), padding="same", activation="relu")
     )
     model.add(layers.BatchNormalization())
+
+    model.add(layers.Reshape((54, -1)))
+
+    model.add(layers.LSTM(64, return_sequences=True))
+    model.add(layers.LSTM(64, return_sequences=True))
+    model.add(layers.LSTM(64))
 
     model.add(layers.Flatten())
     model.add(layers.Dense(64, activation="relu"))

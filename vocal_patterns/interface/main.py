@@ -28,13 +28,13 @@ def train(
         "fmax": 2500,
         # "margin_percent": 0,
         "stretch_target_duration": 10,
-        "snippets": {"duration": snippet_duration, "overlap": snippet_duration - 5},
+        # "snippets": {"duration": snippet_duration, "overlap": snippet_duration - 5},
         # "background_noise": 1,
         # "noise_up": 0.001,
     }
 
     data = get_data()
-    data = preprocess_df(data, clearCached=True, augmentations=augmentations)
+    data = preprocess_df(data, clearCached=False, augmentations=augmentations)
 
     X = data["spectrogram"]
     y = data[["exercise"]]
