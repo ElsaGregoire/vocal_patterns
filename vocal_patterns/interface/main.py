@@ -11,7 +11,7 @@ from vocal_patterns.ml_logic.model import (
 from vocal_patterns.ml_logic.preprocessor import (
     preprocess_df,
 )
-from vocal_patterns.ml_logic.registry import save_model, save_results
+from vocal_patterns.ml_logic.registry import save_history, save_model, save_results
 from vocal_patterns.ml_logic.registry import mlflow_run
 
 
@@ -22,13 +22,13 @@ def train(
     patience=3,
     split_ratio: float = 0.2,
 ) -> float:
-    snippet_duration = 5
+    snippet_duration = 7
     augmentations = {
         "fmin": 200,
         "fmax": 2500,
         # "margin_percent": 0,
         "stretch_target_duration": 10,
-        # "snippets": {"duration": snippet_duration, "overlap": snippet_duration - 5},
+        "snippets": {"duration": snippet_duration, "overlap": snippet_duration - 1},
         # "background_noise": 1,
         # "noise_up": 0.001,
     }
@@ -75,6 +75,7 @@ def train(
 
     save_results(params=results_params, metrics=dict(accuracy=accuracy))
     save_model(model=model, augmentations=augmentations)
+    save_history(history)
 
     print(accuracy)
     return model

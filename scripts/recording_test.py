@@ -58,7 +58,7 @@ def recording_test(data, model):
             {
                 "is": reality,
                 "rslt": f"{prediction_str} ({round(confidence)}%)",
-                "name": filename,
+                "c": correct,
             }
         )
         # Audio(orig_waveform, rate=sr)
@@ -66,4 +66,4 @@ def recording_test(data, model):
     print("Accuracy:", np.mean(results) * 100, "%")
     print("Scale Accuracy:", np.mean(results_scale) * 100, "%")
     print("Arpeggio Accuracy:", np.mean(results_arpeggio) * 100, "%")
-    return results_key
+    return results, results_scale, results_arpeggio, results_key

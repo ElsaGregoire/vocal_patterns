@@ -38,11 +38,16 @@ def init_model(input_shape: Tuple) -> Model:
     )
     model.add(layers.BatchNormalization())
 
-    model.add(layers.Reshape((54, -1)))
+    model.add(layers.Reshape((38, -1)))
 
-    model.add(layers.LSTM(64, return_sequences=True))
-    model.add(layers.LSTM(64, return_sequences=True))
-    model.add(layers.LSTM(64))
+    model.add(
+        layers.Bidirectional(
+            layers.LSTM(64, return_sequences=True, dropout=0.25, recurrent_dropout=0.25)
+        )
+    )
+    model.add(
+        layers.Bidirectional(layers.LSTM(64, dropout=0.25, recurrent_dropout=0.25))
+    )
 
     model.add(layers.Flatten())
     model.add(layers.Dense(64, activation="relu"))
