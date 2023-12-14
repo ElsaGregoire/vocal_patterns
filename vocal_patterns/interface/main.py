@@ -11,7 +11,7 @@ from vocal_patterns.ml_logic.model import (
 from vocal_patterns.ml_logic.preprocessor import (
     preprocess_df,
 )
-from vocal_patterns.ml_logic.registry import save_history, save_model, save_results
+from vocal_patterns.ml_logic.registry import save_model, save_results
 from vocal_patterns.ml_logic.registry import mlflow_run
 
 
@@ -75,9 +75,8 @@ def train(
 
     save_results(params=results_params, metrics=dict(accuracy=accuracy))
     save_model(model=model, augmentations=augmentations)
-    save_history(history)
+    # save_history(history)
 
-    print(accuracy)
     return model
 
 

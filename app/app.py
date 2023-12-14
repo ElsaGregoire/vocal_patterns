@@ -44,12 +44,22 @@ def display_spectrogram(audio):  # You need to define the sampling rate for audi
     st.pyplot()
 
 
+def get_pitch_note(float_audio_array):
+    pitches, magnitudes = librosa.piptrack(y=float_audio_array, sr=sample_rate)
+    indices = magnitudes > 0
+    estimated_pitches = pitches[indices]
+    if len(estimated_pitches) == 0:
+        return None  # No pitch detected
+    first_part = int(len(estimated_pitches) * 0.1)
+    avg_pitch = np.mean(estimated_pitches[:first_part])
+    return librosa.hz_to_note(avg_pitch)
+
+
 def get_prediction(float_audio_array_as_list):
     response = requests.post(
         voxlyze_predict_uri,
         json={"float_audio_array_as_list": float_audio_array_as_list},
     )
-
     return response
 
 
@@ -61,10 +71,18 @@ def show_response(resp):
 
     result = st.markdown(
         body=f"""
-        # {prediction} ({confidence}%) \n\n Model ID: {model_id}   
-        **Augmentations:**
-        {augmentations} 
-        """
+            <style>
+            .grey-text {{
+                color: lightgrey;
+            }}
+            </style>
+            
+        # {prediction} 
+        ### Confidence:({confidence}%) \n\n 
+        <span class='grey-text'><b>Augmentations:</b><br>
+        {augmentations}</span>
+            """,
+        unsafe_allow_html=True,
     )
     if confidence >= 70:
         st.balloons()
@@ -73,6 +91,7 @@ def show_response(resp):
     return result
 
 
+#  in {get_pitch_note(float_audio_array)} \n\n
 def response_display(float_audio_array):
     # float_audio_array = reduce_noise(float_audio_array, sample_rate)
     st.audio(float_audio_array, format="audio/wav", sample_rate=sample_rate)
@@ -89,6 +108,7 @@ def response_display(float_audio_array):
 
     st.write("### Your recording result is 🥁")
     float_audio_array_as_list = float_audio_array.tolist()
+
     resp = get_prediction(float_audio_array_as_list).json()
     show_response(resp)
 
@@ -194,25 +214,21 @@ if options == "Record  🎙️":
 
 else:
     st.markdown("### Upload your audio file here ⬇️")
-    uploaded_file1 = st.file_uploader(
-        "Pick a wave file!",
+    uploaded_file = st.file_uploader(
+        "upload your audio file here:",
+        label_visibility="hidden",
         type="wav",
         key="sample1",
         help="Upload your wave audio file. It should last between 4 and 6 seconds.",
     )
-
-    if uploaded_file1 is None:
-        st.info("Please upload a wave file.")
-        st.stop()
-
-    if uploaded_file1 is not None:
+    if uploaded_file is not None:
         if (
             st.button("Upload a new file", use_container_width=True, type="primary")
             == False
         ):
             st.spinner("Checking the audio...")
             float_audio_array, sr = librosa.load(
-                BytesIO(uploaded_file1.read()), sr=sample_rate
+                BytesIO(uploaded_file.read()), sr=sample_rate
             )
             response_display(float_audio_array)
         else:

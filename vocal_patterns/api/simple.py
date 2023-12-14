@@ -6,7 +6,7 @@ from vocal_patterns.ml_logic.preprocessor import preprocess_predict
 from vocal_patterns.ml_logic.registry import load_model
 from vocal_patterns.params import DEPLOYMENT
 
-stage = "None" if DEPLOYMENT == "local" else "Production"
+stage = "Production" if DEPLOYMENT == "local" else "Production"
 
 app = FastAPI()
 app.state.model = load_model(stage=stage)
